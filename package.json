@@ -1,4 +1,9 @@
 {
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  },
   "name": "twm-website",
   "version": "0.1.0",
   "private": true,
@@ -9,19 +14,32 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/lossless-json": "^1.0.3",
+    "@types/mysql": "^2.15.23",
+    "axios": "^1.6.0",
+    "fs": "^0.0.1-security",
+    "json-bigint": "^1.0.0",
+    "json-with-bigint": "^2.0.0",
+    "lossless-json": "^3.0.0",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.6.2",
+    "net": "^1.0.2",
+    "next": "14.0.1",
+    "next-auth": "^4.24.4",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.0.1"
+    "sequelize": "^6.33.0",
+    "tls": "^0.0.1"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.1",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
-    "eslint": "^8",
-    "eslint-config-next": "14.0.1"
+    "typescript": "^5"
   }
 }

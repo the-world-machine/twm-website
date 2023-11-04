@@ -16,6 +16,11 @@
   }
 }
 
+@font-face {
+  font-family: "TERMINUS";
+  src: url("/font/TerminusTTF-Bold.woff");
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -24,4 +29,20 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+/* Initial state - menu is hidden */
+.menu-hidden {
+  opacity: 0;
+  transform: translateX(200%);
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Open state - menu is visible */
+.menu-open {
+  opacity: 1;
+  transform: translateX(100%);
+  visibility: visible;
+  transition: all 0.3s ease-in-out;
 }
