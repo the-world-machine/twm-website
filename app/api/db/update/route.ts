@@ -5,33 +5,36 @@ import createDBConnection from '../db-connection';
 
 export async function POST(request: NextRequest) {
 
+  if (request.headers.get('key') !== process.env.NEXT_PUBLIC_DB_KEY) {
+    return new Response(`Unauthorized.`, {
+      status: 401
+    })
+  }
+
   const db: Connection = await createDBConnection();
 
   const headers = request.headers;
 
-  console.log(headers);
-
-  const query = `UPDATE ${headers.get('table')} SET ${headers.get('column')} = '${headers.get('data')}' WHERE p_key = ${headers.get('p_key')}`;
-
-  console.log(query);
+  const query = `UPDATE ${headers.get('table')} SET ${headers.get('column')} = ? WHERE p_key = ${headers.get('p_key')}`;
 
   let value = null;
 
   try {
-    const result = await db.execute(query);
+    await db.execute(query, [headers.get('data')]); 
   } catch (error) {
-    return new Response(`200`, {
-      status: 200,
-      headers: {
-        status: 'error'
-      }
+
+    console.error(error);
+
+    await db.end();
+
+    return new Response(`Unable to connect.`, {
+      status: 503,
     })
   }
 
-  return new Response(`200`, {
+  await db.end();
+
+  return new Response(`Successfully updated database.`, {
     status: 200,
-    headers: {
-      status: '200'
-    },
   })
 }

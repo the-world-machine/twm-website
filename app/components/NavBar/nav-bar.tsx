@@ -40,7 +40,6 @@ export default function NavBar() {
                 </div>
                 <div className={`absolute w-1/2 h-1/2 bg-twm-logo-bg flex flex-col justify-evenly font-main origin-top ${open ? "menu-open" : "menu-hidden"}`}>
                     <RedirectButton text="Invite" page="/invite" />
-                    <RedirectButton text="Commands" page="/commands" />
                     <RedirectButton text="Shop" page="/shop" />
                     <RedirectButton text="Profile" page="/profile" />
                 </div>

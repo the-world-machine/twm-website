@@ -14,6 +14,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.17",
+    "@headlessui/tailwindcss": "^0.2.0",
     "@types/lossless-json": "^1.0.3",
     "@types/mysql": "^2.15.23",
     "axios": "^1.6.0",

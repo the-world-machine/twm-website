@@ -5,33 +5,60 @@ import createDBConnection from '../db-connection';
 
 export async function POST(request: NextRequest) {
 
+  if (request.headers.get('key') !== process.env.NEXT_PUBLIC_DB_KEY) {
+
+    console.error('Incorrect Access Key.')
+    
+    return new Response(`Unauthorized.`, {
+      status: 401
+    })
+  }
+
   const db: Connection = await createDBConnection();
 
   const headers = request.headers;
 
-  const query = `SELECT * FROM ${headers.get('table')} WHERE p_key = ${headers.get('p_key')}`;
+  const gettingAllData = headers.get('p_key') === 'all';
 
-  console.log(query);
+  let query = '';
 
+  if (gettingAllData) {
+    query = `SELECT * FROM ${headers.get('table')}`
+  } else {
+    query = `SELECT * FROM ${headers.get('table')} WHERE p_key = ${headers.get('p_key')}`
+  }
+
+  console.log(query)
+  
   let value = null;
 
   try {
     const result = await db.query(query) as RowDataPacket[];
-    value = JSON.stringify(result[0][0]);
+
+    if (gettingAllData) {
+      value = JSON.stringify(result[0]);
+    }
+    else {
+      value = JSON.stringify(result[0][0]);
+    }
+    
   } catch (error) {
-    return new Response(`200`, {
-      status: 200,
-      headers: {
-        status: 'error'
-      }
+
+    console.log(error)
+
+    await db.end();
+
+    return new Response(`Error.`, {
+      status: 503,
     })
   }
 
-  return new Response(`200`, {
+  await db.end();
+
+  return new Response(`Successful.`, {
     status: 200,
     headers: {
       data: value as string,
-      status: '200'
     },
   })
 }

@@ -1,35 +1,179 @@
 'use client'
 import NavBar from "../components/NavBar/nav-bar";
 import Footer from "../components/footer";
-import { ParseType, UserData, Background } from "../components/database-parse-type";
+import { UserInfo, UserData, Background } from "../components/database-parse-type";
 import {useSession, signIn} from "next-auth/react";
 import axios from "axios";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
+import Image from "next/image";
+import BackgroundSelection from "../components/profile/background-selector";
+import languages from './languages.json';
+import { signOut } from "next-auth/react";
+
 export default function Profile() {
 
+    // initialization
     const [hasBeenCalled, setBeenCalled] = useState(false);
+    
     const [pageStatus, setPageStatus] = useState('loading');
     const [userData, setUserData] = useState<null | UserData>(null);
 
+    // backgrounds
+    const [equippedBackground, setEquippedBackground] = useState<Background>({} as Background);
+    const [ownedBackgrounds, setBackgrounds] = useState<Background[]>([]);
+    // saving changes
+    const [saveStatus, setSaveStatus] = useState('...');
+    const [saved, setSaved] = useState(true);
+
+    const [textLength, setTextLength] = useState(0);
+    const [profileDescription, setProfileDescription] = useState('');
+
+    const [translationLanguage, setTranslationLanguage] = useState('english');
+     
+    const [badgeNotifications, setBadgeNotifications] = useState(true);
+
+    const { data, status } = useSession();
+
     function Page(user: UserData) {
 
-      let profileDescription: string = user.profile_description;
+      const updateProfileDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        
+        setProfileDescription(e.target.value);
+
+        setTextLength(e.target.value.length);
+
+        console.log(profileDescription);
+
+        setSaved(false);
+        setSaveStatus('You have unsaved changes!');
+
+      }
+
+      const updateBackground = (background: Background) => {
+        setEquippedBackground(background);
+
+        setSaved(false);
+        setSaveStatus('You have unsaved changes!');
+      }
+
+      const updateLanguage = (language: string) => {
+
+        console.log(language)
+
+        setTranslationLanguage(language);
+
+        setSaved(false);
+        setSaveStatus('You have unsaved changes!');
+      }
+
+      const updateBadgeNotifications = () => {
+        setBadgeNotifications(!badgeNotifications);
+
+        setSaved(false);
+        setSaveStatus('You have unsaved changes!');
+      }
+
+      const SaveChanges = () => {
+
+        if (saved) {
+          return;
+        }
+
+        const backgroundID = equippedBackground?.p_key - 1;
+
+        let description = profileDescription;
+        
+        description = description.replaceAll(`'`, `\\'`);
+        description = description.replaceAll(`"`, `\\"`);
+
+        console.log(description)
+
+        UpdateDatabase('profile_description', description, String(user.p_key));
+        UpdateDatabase('equipped_background', backgroundID, String(user.p_key));
+        UpdateDatabase('translation_language', translationLanguage, String(user.p_key));
+        UpdateDatabase('unlock_notifications', `{"bool_value": ${badgeNotifications}}`, String(user.p_key));
+
+        setSaved(true);
+        setSaveStatus('Changes have been saved!');
+      }
 
       return(
-        <div>
+        <div className="bg-gradient-to-b from-refuge-dark to-twm-logo-bg">
             <NavBar />
+
+            <div className='bg-refuge-light w-full sticky top-0 bg-opacity-100'>
+              <div className="font-main flex justify-center">
+                  <p className='text-xl text-center text-white mr-6 my-2'>{saveStatus}</p>
+                  <button
+                    onClick={SaveChanges}
+                    type="submit"
+                    className={saved ? 'bg-refuge-highlight opacity-40 text-white px-5 rounded-lg hover:cursor-not-allowed text-xl mb-2 my-2' : 'bg-refuge-highlight text-white rounded-lg px-5 hover:cursor-pointer hover:animate-pulse text-xl mb-2 my-2'}>
+                      Save Changes
+                  </button>
+              </div>
+            </div>
+
             <div className='font-main my-32 mx-10 grid place-content-center'>
-                <h1 className='text-5xl text-twm-sun text-center'>Profile</h1>
-                <p className='text-xl mt-5 text-center'>Welcome</p>
-                <label htmlFor="description">Update profile description</label>
+
+                <h1 className='text-3xl ml-5 text-twm-sun text-center'>User Settings</h1>
+
+                <h1 className='text-xl text-refuge-highlight text-center mt-10 mb-5'>Change Translation Language</h1>
+
+                <select onChange={(e) => updateLanguage(e.currentTarget.value)} value={translationLanguage} className="text-white bg-refuge-highlight p-2 rounded-lg">
+                  {languages.map((language) => (
+                    <option key={language.value} value={language.value}>{language.name}</option>
+                  ))}
+                </select>
+
+                <h1 className='text-xl text-refuge-highlight text-center mt-10 mb-5 outline-2'>Badge Notifications</h1>
+                <button onClick={() => updateBadgeNotifications()} className={badgeNotifications ? 'bg-refuge-highlight text-white rounded-lg text-xl mb-10' : 'bg-gray-200 opacity-40 text-black rounded-lg text-xl mb-10'}>
+                  {badgeNotifications ? 'Enabled' : 'Disabled'}
+                </button>
+
+                <hr className='my-10' />
+
+                <h1 className='text-3xl mt-2 text-twm-sun text-center'>Profile Settings</h1>
+
+                <h1 className='text-xl text-refuge-highlight text-center mt-5 mb-5'>Change Profile Description</h1>
                 <textarea
                   id="description"
                   name="description"
                   defaultValue={user.profile_description}
-                  onChange={(e) => profileDescription = e.target.value}
-                  className="text-black bg-twm-highlight p-2 rounded-lg"
+                  onChange={(e) => updateProfileDescription(e)}
+                  maxLength={100}
+                  className="resize-none text-white bg-refuge-light p-2 rounded-lg selection:border-4 mb-2"
                 />
-                <button onClick={() => UpdateProfileDescription(profileDescription, String(user.p_key))} type="submit">Submit</button>
+                <h1>{textLength}/100</h1>
+
+                <h1 className='text-xl text-refuge-highlight text-center mt-10 mb-5'>Change Profile Background</h1>
+
+                <BackgroundSelection ownedBackgrounds={ownedBackgrounds} equippedBackground={equippedBackground as Background} onChange={updateBackground} />
+                    
+                <hr className='my-10' />
+
+                <h1 className='text-3xl mt-6 ml-5 text-twm-sun text-center'>User Stats</h1>
+
+                <div className='flex justify-center mt-5'>
+                  <h1 className='text-xl text-refuge-highlight text-center'>Total Messages Sent:</h1>
+                  <p className='text-xl text-center ml-3'>{user.times_messaged}</p>
+                </div>
+                  
+                <div className='flex justify-center mt-5'>
+                  <h1 className='text-xl text-refuge-highlight text-center'>Total Times Shattered:</h1>
+                  <p className='text-xl text-center ml-3'>{user.times_shattered}</p>
+                </div>
+
+                <div className='flex justify-center mt-5'>
+                  <h1 className='text-xl text-refuge-highlight text-center'>Total Times Asked:</h1>
+                  <p className='text-xl text-center ml-3'>{user.times_asked}</p>
+                </div>
+
+                <div className='flex justify-center mt-5'>
+                  <h1 className='text-xl text-refuge-highlight text-center'>Total Times Transmitted:</h1>
+                  <p className='text-xl text-center ml-3'>{user.times_transmitted}</p>
+                </div>
+
+                <p onClick={() => signOut()} className='mt-20 text-xl hover:text-twm-sun cursor-pointer flex justify-center'>Sign Out</p>
             </div>
             <Footer />
         </div>
@@ -49,11 +193,9 @@ export default function Profile() {
       )
     }
 
-    const UpdateProfileDescription = useCallback((description: string, userID: string) => {
+    const UpdateDatabase = useCallback((column: string, data: any, userID: string) => {
 
       async function updateData() {
-
-        console.log(description);
 
         try {
           const response = await fetch('/api/db/update', {
@@ -61,20 +203,16 @@ export default function Profile() {
             headers: {
               table: 'user_data',
               p_key: userID,
-              column: 'profile_description',
-              data: description
+              column: column,
+              data: data,
+              key: process.env.NEXT_PUBLIC_DB_KEY as string
             }
           })
 
-          if (response.headers.get('data') === 'error') {
+          if (response.status === 401 || response.status === 503) {
 
             console.error('Error fetching data.')
-
-            window.location.reload();
           }
-          
-          window.location.reload();
-
         } catch (error) {
           console.error('Error fetching data:', error);
         }
@@ -84,7 +222,29 @@ export default function Profile() {
     }, [])
 
     const getUserData = useCallback((userID: string) => {
-
+      async function fetchBackground(backgroundID: number) {
+        try {
+          const response = await fetch('/api/db/get', {
+            method: 'POST',
+            headers: {
+              table: 'Backgrounds',
+              p_key: backgroundID.toString(),
+              key: process.env.NEXT_PUBLIC_DB_KEY as string,
+            },
+          });
+    
+          if (response.status !== 200) {
+            return null;
+          }
+    
+          const backgroundData = JSON.parse(response.headers.get('data') as string);
+          return backgroundData;
+        } catch (error) {
+          console.error('Error fetching background data:', error);
+          return null;
+        }
+      }
+    
       async function fetchData() {
         try {
           const response = await fetch('/api/db/get', {
@@ -92,33 +252,53 @@ export default function Profile() {
             headers: {
               table: 'user_data',
               p_key: userID,
-            }
-          })
-
-          if (response.headers.get('data') === 'error') {
-
-            console.error('Error fetching data.')
-
+              key: process.env.NEXT_PUBLIC_DB_KEY as string,
+            },
+          });
+    
+          if (response.status === 401 || response.status === 503) {
+            console.error('Error fetching data');
             setPageStatus('error');
+            return;
           }
-          
-          const user: UserData = JSON.parse(response.headers.get('data') as string);
-
+    
+          const user = JSON.parse(response.headers.get('data') as string);
           user.p_key = userID;
+          
+          const notifications = JSON.parse(user.unlock_notifications as string);
+          setBadgeNotifications(notifications.bool_value);
+
+          const unlockedBackgroundIDs = JSON.parse(user.unlocked_backgrounds as string);
+    
+          const backgroundPromises = unlockedBackgroundIDs.map((backgroundID: number) => fetchBackground(backgroundID + 1));
+    
+          const backgrounds = await Promise.all(backgroundPromises);
+          const equippedBackground = await fetchBackground(user.equipped_background + 1);
+    
+          // Filter out any null values (failed background fetches)
+          const filteredBackgrounds = backgrounds.filter((background) => background !== null);
+    
+          setBackgrounds(filteredBackgrounds);
+          setEquippedBackground(equippedBackground);
+
+          setTextLength(user.profile_description.length);
+          setTranslationLanguage(user.translation_language);
+          setProfileDescription(user.profile_description);
+
+          console.log(notifications.bool_value);
+
+          setBadgeNotifications(notifications.bool_value);
 
           setUserData(user);
           setPageStatus('success');
-
         } catch (error) {
           console.error('Error fetching data:', error);
           setPageStatus('error');
         }
       }
-  
+    
       return fetchData();
     }, []);
-
-    const { data, status } = useSession();
 
     if (!data && status !== 'loading') {
         return (
@@ -127,7 +307,7 @@ export default function Profile() {
                 <div className='font-main my-32 mx-10 grid place-content-center'>
                     <h1 className='text-5xl text-twm-sun text-center'>Profile</h1>
                     <p   className='text-xl mt-5 text-center'>You need to be signed in to access this page!</p>
-                    <button onClick={() => signIn('discord')} className='bg-twm-highlight text-white p-3 rounded-lg hover:cursor-pointer hover:animate-pulse text-3xl my-10'>Sign In</button>
+                    <button onClick={() => signIn('discord')} className='bg-refuge-highlight text-white p-3 rounded-lg hover:cursor-pointer hover:animate-pulse text-3xl my-10'>Sign In</button>
                 </div>
                 <Footer />
             </div>
@@ -155,7 +335,7 @@ export default function Profile() {
       })
       .then((response) => {
         const user_data = response.data;
-    
+
         getUserData(user_data.id);
       })
       .catch((error) => {

@@ -1,0 +1,206 @@
+[
+    {
+        "name": "English | English",
+        "value": "english"
+    },
+    {
+        "name": "Chinese (Simplified) | 中文",
+        "value": "chinese_simplified"
+    },
+    {
+        "name": "Spanish | Español",
+        "value": "spanish"
+    },
+    {
+        "name": "Hindi | हिन्दी",
+        "value": "hindi"
+    },
+    {
+        "name": "Arabic | العربية",
+        "value": "arabic"
+    },
+    {
+        "name": "Bengali | বাংলা",
+        "value": "bengali"
+    },
+    {
+        "name": "Portuguese | Português",
+        "value": "portuguese"
+    },
+    {
+        "name": "Russian | Русский",
+        "value": "russian"
+    },
+    {
+        "name": "Japanese | 日本語",
+        "value": "japanese"
+    },
+    {
+        "name": "Punjabi | ਪੰਜਾਬੀ",
+        "value": "punjabi"
+    },
+    {
+        "name": "French | Français",
+        "value": "french"
+    },
+    {
+        "name": "German | Deutsch",
+        "value": "german"
+    },
+    {
+        "name": "Korean | 한국어",
+        "value": "korean"
+    },
+    {
+        "name": "Turkish | Türkçe",
+        "value": "turkish"
+    },
+    {
+        "name": "Italian | Italiano",
+        "value": "italian"
+    },
+    {
+        "name": "Dutch | Nederlands",
+        "value": "dutch"
+    },
+    {
+        "name": "Polish | Polski",
+        "value": "polish"
+    },
+    {
+        "name": "Swedish | Svenska",
+        "value": "swedish"
+    },
+    {
+        "name": "Greek | Ελληνικά",
+        "value": "greek"
+    },
+    {
+        "name": "Hebrew | עברית",
+        "value": "hebrew"
+    },
+    {
+        "name": "Thai | ไทย",
+        "value": "thai"
+    },
+    {
+        "name": "Vietnamese | Tiếng Việt",
+        "value": "vietnamese"
+    },
+    {
+        "name": "Romanian | Română",
+        "value": "romanian"
+    },
+    {
+        "name": "Czech | Čeština",
+        "value": "czech"
+    },
+    {
+        "name": "Ukrainian | Українська",
+        "value": "ukrainian"
+    },
+    {
+        "name": "Finnish | Suomi",
+        "value": "finnish"
+    },
+    {
+        "name": "Danish | Dansk",
+        "value": "danish"
+    },
+    {
+        "name": "Norwegian | Norsk",
+        "value": "norwegian"
+    },
+    {
+        "name": "Bulgarian | Български",
+        "value": "bulgarian"
+    },
+    {
+        "name": "Hungarian | Magyar",
+        "value": "hungarian"
+    },
+    {
+        "name": "Malay | Bahasa Melayu",
+        "value": "malay"
+    },
+    {
+        "name": "Persian | فارسی",
+        "value": "persian"
+    },
+    {
+        "name": "Slovak | Slovenčina",
+        "value": "slovak"
+    },
+    {
+        "name": "Croatian | Hrvatski",
+        "value": "croatian"
+    },
+    {
+        "name": "Lithuanian | Lietuvių",
+        "value": "lithuanian"
+    },
+    {
+        "name": "Slovenian | Slovenščina",
+        "value": "slovenian"
+    },
+    {
+        "name": "Latvian | Latviešu",
+        "value": "latvian"
+    },
+    {
+        "name": "Estonian | Eesti",
+        "value": "estonian"
+    },
+    {
+        "name": "Serbian | Српски",
+        "value": "serbian"
+    },
+    {
+        "name": "Macedonian | Македонски",
+        "value": "macedonian"
+    },
+    {
+        "name": "Bosnian | Bosanski",
+        "value": "bosnian"
+    },
+    {
+        "name": "Albanian | Shqip",
+        "value": "albanian"
+    },
+    {
+        "name": "Sinhala | සිංහල",
+        "value": "sinhala"
+    },
+    {
+        "name": "Georgian | ქართული",
+        "value": "georgian"
+    },
+    {
+        "name": "Swahili | Kiswahili",
+        "value": "swahili"
+    },
+    {
+        "name": "Nepali | नेपाली",
+        "value": "nepali"
+    },
+    {
+        "name": "Igbo | Igbo",
+        "value": "igbo"
+    },
+    {
+        "name": "Zulu | isiZulu",
+        "value": "zulu"
+    },
+    {
+        "name": "Kurdish | Kurdî",
+        "value": "kurdish"
+    },
+    {
+        "name": "Yoruba | Yorùbá",
+        "value": "yoruba"
+    },
+    {
+        "name": "Haitian Creole | Kreyòl Ayisyen",
+        "value": "haitian_creole"
+    }
+]
