@@ -14,8 +14,8 @@ export default function Sell({ treasure, stockPrice, amount, onSell }: { treasur
                 <p className='text-lg text-white flex'>Sell Price: <Wool />{Math.floor(treasure.price * (stockPrice / 100))}</p>
 
                 <div className="my-3 mx-auto">
-                    <button onClick={() => onSell(treasure, '1')} className='bg-glens-light rounded-xl mr-2 py-2 px-10 hover:cursor-pointer flex select-none whitespace-nowrap'>Sell 1</button>
-                    <button onClick={() => onSell(treasure, 'all')} className='bg-glens-light rounded-xl mr-2 py-2 px-10 hover:cursor-pointer flex select-none whitespace-nowrap'>Sell All</button>
+                    <div onClick={() => onSell(treasure, '1')} className='bg-glens-light rounded-xl mr-2 py-2 px-10 hover:cursor-pointer select-none whitespace-nowrap text-center'>Sell 1</div>
+                    <div onClick={() => onSell(treasure, 'all')} className='bg-glens-light mt-3 rounded-xl mr-2 py-2 px-10 hover:cursor-pointer select-none whitespace-nowrap text-center'>Sell All</div>
                 </div>
 
                 <p className='mb-4'>You currently own: {amount}</p>
