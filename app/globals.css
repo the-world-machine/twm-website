@@ -33,7 +33,6 @@ body {
 
 /* Initial state - menu is hidden */
 .menu-hidden {
-  opacity: 0;
   transform: translateX(200%);
   visibility: hidden;
   transition: all 0.3s ease-in-out;
@@ -41,8 +40,7 @@ body {
 
 /* Open state - menu is visible */
 .menu-open {
-  opacity: 1;
-  transform: translateX(100%);
+  transform: translateX(-70%);
   visibility: visible;
   transition: all 0.3s ease-in-out;
 }

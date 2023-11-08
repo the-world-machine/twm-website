@@ -28,7 +28,7 @@ export default function BackgroundSelection({ ownedBackgrounds, equippedBackgrou
 
             <h1>Currently Selected: {selectedBackground.name}</h1>
 
-            <Image src={selectedBackground.image} alt={selectedBackground.name} width={300} height={0} className='mt-2 mx-5 bg-refuge-light'/>
+            <img src={selectedBackground.image} alt={selectedBackground.name} width={300} height={0} className='mt-2 mx-5 bg-refuge-light'/>
 
             <div className='flex overflow-x-auto max-w-[600px] mt-3 rounded-xl bg-refuge-light'>
                 {ownedBackgrounds.map((background) => (

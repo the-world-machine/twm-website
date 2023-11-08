@@ -1,6 +1,6 @@
 'use client'
 import { useState, useCallback } from "react";
-import { useSession } from "next-auth/react"
+import { useSession, signIn } from "next-auth/react"
 import Image from 'next/image'
 import axios from "axios";
 import NavBar from '../components/NavBar/nav-bar'
@@ -398,6 +398,20 @@ export default function Shop() {
         setBeenCalled(true);
         }
 
+        if (!data) {
+            return (
+                <div>
+                    <NavBar />
+                    <div className='font-main my-32 mx-10 grid place-content-center'>
+                        <h1 className='text-5xl text-twm-sun text-center'>Profile</h1>
+                        <p   className='text-xl mt-5 text-center'>You need to be signed in to access this page!</p>
+                        <button onClick={() => signIn('discord')} className='bg-glens-highlight text-white p-3 rounded-lg hover:cursor-pointer hover:animate-pulse text-3xl my-10'>Sign In</button>
+                    </div>
+                    <Footer />
+                </div>
+            )
+        }
+
         if (pageStatus === 'loading') {
             return (
                 <div>
@@ -412,13 +426,13 @@ export default function Shop() {
         }
 
         if (pageStatus === 'error') {
-        return ErrorPage();
+            return ErrorPage();
+        }
+        
+        if (pageStatus === 'success') {
+            return Page(userData as UserData);
         }
 
-        if (pageStatus === 'success') {
-        return Page(userData as UserData);
-        }
-    
     function Page(user: UserData) {
 
         const treasuresToSell = false;
@@ -426,7 +440,10 @@ export default function Shop() {
         return(
             <div className="bg-gradient-to-b from-[#009999] via-[#283777] to-[#652E9A]">
                 <NavBar />
+
+                <p className='bg-glens-dark rounded-xl my-5 sm:mx-auto lg:mx-5 font-main max-w-[300px] p-3 text-center sticky top-5 flex sm:justify-center'> Current Balance: <Wool /> {(user.wool).toLocaleString(undefined)}</p>
                 <div className='font-main my-32 mx-10 flex justify-center flex-col'>
+
                     <h1 className='text-5xl text-twm-sun text-center'>Shop</h1>
                     <p className='text-2xl my-5 text-center text-glens-highlight'>Welcome to the shop!</p>
 
@@ -506,11 +523,7 @@ Just keep in mind that you can only have one Nikogotchi at a time. The only way 
                     ))}
                 </div>
 
-                <Image src='/certified-stock-market-crasher.png' alt='certified stock market crasher' width={50} height={0} className='mx-10 sticky bottom-7'/>
-
-                <div className='flex justify-center text-xl bg-glens-dark font-main sticky bottom-0'>
-                    <Wool /> {(user.wool).toLocaleString(undefined)}
-                </div>
+                <Image src='/certified-stock-market-crasher.png' alt='certified stock market crasher' width={50} height={0} className='mx-auto flex justify-center'/>
 
                 <Footer />
             </div>

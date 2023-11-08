@@ -11,11 +11,7 @@ export default function NavBar() {
     // Function to set the scale to 100
     const openMenu = () => {
 
-        if (open) {
-            setOpen(false);
-        } else {
-            setOpen(true);
-        }
+        setOpen(!open);
     }
 
     // create a function that changes the page to #
@@ -30,18 +26,16 @@ export default function NavBar() {
         setIsMobile(mobileRegex.test(userAgent));
       }, []);
 
-    if (isMobile) {
+    function HamburgerMenu() {
         return (
             <div>
-                <div className="flex justify-between p-5 bg-twm-logo-bg w-full h-full font-main">
-                    <h1 onClick={handleClick} className='text-3xl text-twm-highlight mt-8 ml-4 hover:cursor-pointer hover:scale-105 transition-transform duration-200 hover:text-twm-sun'>The World Machine</h1>
-                    <SignIn />
-                    <Image onClick={openMenu} src="/hamburger-mmm.svg" alt="hamburgermenu" width={50} height={20} fill={false} />
-                </div>
-                <div className={`absolute w-1/2 h-1/2 bg-twm-logo-bg flex flex-col justify-evenly font-main origin-top ${open ? "menu-open" : "menu-hidden"}`}>
+                <Image onClick={() => openMenu()} src="/hamburger-mmm.svg" alt="menu" width={50} height={50} className='hover:scale-110 transition-transform duration-200 my-auto'/>
+
+                <div className={`absolute w-[250px] h-full bg-twm-logo-bg flex flex-col justify-evenly font-main origin-top-left ${open ? "menu-open" : "menu-hidden"}`}> 
                     <RedirectButton text="Invite" page="/invite" />
                     <RedirectButton text="Shop" page="/shop" />
                     <RedirectButton text="Profile" page="/profile" />
+                    <SignIn />
                 </div>
             </div>
         )
@@ -49,14 +43,23 @@ export default function NavBar() {
 
     return (
         <div className="flex justify-between p-5 bg-twm-logo-bg w-full h-full font-main">
-            <h1 onClick={handleClick} className='text-5xl text-twm-highlight mt-8 ml-4 hover:cursor-pointer hover:scale-105 transition-transform duration-200 hover:text-twm-sun'>The World Machine</h1>
-            <div className='flex justify-between my-10'>
-                <RedirectButton text="Invite" page="/invite" />
-                <RedirectButton text="Shop" page="/shop" />
-                <RedirectButton text="Profile" page="/profile" />
-            </div>
+            <h1 onClick={handleClick} className='text-3xl text-twm-highlight my-auto ml-4 hover:cursor-pointer hover:scale-105 transition-transform duration-200 hover:text-twm-sun'>The World Machine</h1>
+            
+            {
+                isMobile ? (
+                    <HamburgerMenu />
+                ) : (
+                    <div className='flex justify-between mx-10 my-auto'>
+                        <div className='flex justify-between my-10'>
+                            <RedirectButton text="Invite" page="/invite" />
+                            <RedirectButton text="Shop" page="/shop" />
+                            <RedirectButton text="Profile" page="/profile" />
+                        </div>
 
-            <SignIn />
+                        <SignIn />
+                    </div>
+                )
+            }
         </div>
     )
 }
