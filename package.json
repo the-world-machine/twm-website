@@ -19,6 +19,7 @@
     "@types/lossless-json": "^1.0.3",
     "@types/mysql": "^2.15.23",
     "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
     "fs": "^0.0.1-security",
     "json-bigint": "^1.0.0",
     "json-with-bigint": "^2.0.0",

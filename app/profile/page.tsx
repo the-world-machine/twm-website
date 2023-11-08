@@ -10,6 +10,8 @@ import BackgroundSelection from "../components/profile/background-selector";
 import languages from './languages.json';
 import { signOut } from "next-auth/react";
 
+import Config from "../../twm-config.json";
+
 export default function Profile() {
 
     // initialization
@@ -205,7 +207,7 @@ export default function Profile() {
               p_key: userID,
               column: column,
               data: data,
-              key: process.env.NEXT_PUBLIC_DB_KEY as string
+              key: Config.DB_KEY
             }
           })
 
@@ -229,7 +231,7 @@ export default function Profile() {
             headers: {
               table: 'Backgrounds',
               p_key: backgroundID.toString(),
-              key: process.env.NEXT_PUBLIC_DB_KEY as string,
+              key: Config.DB_KEY,
             },
           });
     
@@ -252,7 +254,7 @@ export default function Profile() {
             headers: {
               table: 'user_data',
               p_key: userID,
-              key: process.env.NEXT_PUBLIC_DB_KEY as string,
+              key: Config.DB_KEY,
             },
           });
     

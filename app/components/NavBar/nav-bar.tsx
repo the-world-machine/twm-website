@@ -52,7 +52,6 @@ export default function NavBar() {
             <h1 onClick={handleClick} className='text-5xl text-twm-highlight mt-8 ml-4 hover:cursor-pointer hover:scale-105 transition-transform duration-200 hover:text-twm-sun'>The World Machine</h1>
             <div className='flex justify-between my-10'>
                 <RedirectButton text="Invite" page="/invite" />
-                <RedirectButton text="Commands" page="/commands" />
                 <RedirectButton text="Shop" page="/shop" />
                 <RedirectButton text="Profile" page="/profile" />
             </div>

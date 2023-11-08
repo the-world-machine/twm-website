@@ -16,6 +16,8 @@ import PancakeContainer from "./pancakes-container";
 import { UserData, Background, NikogotchiData, Item, Shop } from "../components/database-parse-type";
 import Treasure from "./treasure-container";
 
+import Config from "../../twm-config.json";
+
 export default function Shop() {
 
     const [hasBeenCalled, setBeenCalled] = useState(false);
@@ -169,7 +171,7 @@ export default function Shop() {
               headers: {
                 table: table,
                 p_key: 'all',
-                key: process.env.NEXT_PUBLIC_DB_KEY as string,
+                key: Config.DB_KEY,
               },
             });
       
@@ -191,7 +193,7 @@ export default function Shop() {
                 headers: {
                 table: 'nikogotchi_data',
                 p_key: p_key,
-                key: process.env.NEXT_PUBLIC_DB_KEY as string,
+                key: Config.DB_KEY,
                 },
             });
 
@@ -208,7 +210,7 @@ export default function Shop() {
                     headers: {
                         table: 'shop_data',
                         p_key: '0',
-                        key: process.env.NEXT_PUBLIC_DB_KEY as string,
+                        key: Config.DB_KEY,
                     },
                 });
 
@@ -262,7 +264,7 @@ export default function Shop() {
                 headers: {
                     table: 'user_data',
                     p_key: userID,
-                    key: process.env.NEXT_PUBLIC_DB_KEY as string,
+                    key: Config.DB_KEY,
                 },
             });
         
@@ -362,7 +364,7 @@ export default function Shop() {
                     p_key: userID,
                     column: column,
                     data: data,
-                    key: process.env.NEXT_PUBLIC_DB_KEY as string
+                    key: Config.DB_KEY
                 }
             })
   
