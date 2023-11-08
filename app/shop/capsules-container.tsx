@@ -8,7 +8,7 @@ export default function Capsules({ item, user, nikogotchi, onPurchase }: { item:
         if (nikogotchi.nikogotchi_available > 0) {
             return (
                 <div className='bg-glens-light opacity-20 rounded-xl mr-2 py-2 px-10 hover:cursor-not-allowed flex select-none'>
-                    Buy
+                    Owned
                 </div>
             )
         } else if (user.wool >= item.price) {

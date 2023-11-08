@@ -1,13 +1,12 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
-import Config from "../../../../twm-config.json"
 
 const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
   providers: [
     DiscordProvider({
-        clientId: Config.DISCORD_ID,
-        clientSecret: Config.DISCORD_SECRET,
+        clientId: process.env.NEXT_PUBLIC_DISCORD_ID as string,
+        clientSecret: process.env.NEXT_PUBLIC_DISCORD_SECRET as string,
         authorization: {
           params: {
             scope: 'identify',
@@ -15,6 +14,8 @@ const authOptions: NextAuthOptions = {
         }
     }),
   ],
+
+  secret: process.env.NEXT_PUBLIC_SECRET as string,
 
   callbacks: {
     async jwt({token, account}) {

@@ -1,12 +1,11 @@
 import mysql, { Connection } from 'mysql2/promise';
-import Config from '../../../twm-config.json'
 
 export default async function createDBConnection(): Promise<Connection> {
     const connection = await mysql.createConnection({
-      host: Config.DB_HOST,
-      user: Config.DB_USERNAME,
-      password: Config.DB_PASSWORD,
-      database: Config.DB_NAME,
+      host: process.env.NEXT_PUBLIC_DB_HOST,
+      user: process.env.NEXT_PUBLIC_DB_USERNAME,
+      password: process.env.NEXT_PUBLIC_DB_PASSWORD,
+      database: process.env.NEXT_PUBLIC_DB_NAME ,
     });
     return connection;
 }
