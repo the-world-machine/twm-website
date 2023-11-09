@@ -21,7 +21,7 @@ export default function NavBar() {
 
     useEffect(() => {
         const userAgent = window.navigator.userAgent;
-        const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows/i;
+        const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
     
         setIsMobile(mobileRegex.test(userAgent));
       }, []);
