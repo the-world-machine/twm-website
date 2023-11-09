@@ -37,14 +37,12 @@ export default function Shop() {
 
     const { data, status } = useSession();
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
     function handleVisibilityChange() {
         if (document.visibilityState === 'visible') {
           // Page is visible, trigger a refresh here
           window.location.reload();
         }
-      }
+    }
 
     const OnBGPurchase = (background: Background, user: UserData) => {
 
@@ -280,6 +278,8 @@ export default function Shop() {
                 setPageStatus('error');
                 return;
             }
+
+            document.addEventListener('visibilitychange', handleVisibilityChange);
         
             const user = JSON.parse(response.headers.get('data') as string);
             user.p_key = userID;
