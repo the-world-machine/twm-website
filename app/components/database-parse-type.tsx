@@ -37,6 +37,7 @@ export interface UserData {
 
 export interface NikogotchiData {
   p_key: number;
+  data: string;
   pancakes: number;
   golden_pancakes: number;
   glitched_pancakes: number;

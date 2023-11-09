@@ -37,6 +37,15 @@ export default function Shop() {
 
     const { data, status } = useSession();
 
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    function handleVisibilityChange() {
+        if (document.visibilityState === 'visible') {
+          // Page is visible, trigger a refresh here
+          window.location.reload();
+        }
+      }
+
     const OnBGPurchase = (background: Background, user: UserData) => {
 
         let oBGs: number[] = ownedBackgrounds;

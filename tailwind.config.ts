@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+
+      darkMode: 'class',
+
       backgroundImage: {
         'twm': "url('/background.png')",
         'glens-bg': "url('/glens-background.png')",

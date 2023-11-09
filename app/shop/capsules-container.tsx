@@ -5,7 +5,7 @@ import Wool from "../components/shop/wool-icon";
 export default function Capsules({ item, user, nikogotchi, onPurchase }: { item: Item, user: UserData, nikogotchi: NikogotchiData, onPurchase: (item: Item) => void }) {
 
     function NikogotchiCheck() {
-        if (nikogotchi.nikogotchi_available > 0) {
+        if (nikogotchi.data != null) {
             return (
                 <div className='bg-glens-light opacity-20 rounded-xl mr-2 py-2 px-10 hover:cursor-not-allowed flex select-none'>
                     Owned
