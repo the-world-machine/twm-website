@@ -440,8 +440,6 @@ export default function Shop() {
         return(
             <div className="bg-gradient-to-b from-[#009999] via-[#283777] to-[#652E9A]">
                 <NavBar />
-
-                <p className='bg-glens-dark rounded-xl my-5 sm:mx-auto lg:mx-5 font-main max-w-[300px] p-3 text-center sticky top-5 flex sm:justify-center'> Current Balance: <Wool /> {(user.wool).toLocaleString(undefined)}</p>
                 <div className='font-main my-32 mx-10 flex justify-center flex-col'>
 
                     <h1 className='text-5xl text-twm-sun text-center'>Shop</h1>
@@ -523,7 +521,9 @@ Just keep in mind that you can only have one Nikogotchi at a time. The only way 
                     ))}
                 </div>
 
-                <Image src='/certified-stock-market-crasher.png' alt='certified stock market crasher' width={50} height={0} className='mx-auto flex justify-center'/>
+                <Image src='/certified-stock-market-crasher.png' alt='certified stock market crasher' width={50} height={0} className='mx-auto sm:mx-10 sm:sticky bottom-24'/>
+                
+                <p className='fixed bg-glens-light rounded-xl mb-5 font-main p-2 text-center bottom-24 flex mx-3 w-auto max-w-[200px] sm:max-w-[300px] sm:p-5 sm:text-2xl sm:sticky sm:bottom-5'><Wool /> {(user.wool).toLocaleString(undefined)}</p>
 
                 <Footer />
             </div>

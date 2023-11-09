@@ -33,14 +33,14 @@ body {
 
 /* Initial state - menu is hidden */
 .menu-hidden {
-  transform: translateX(200%);
+  transform: translateX(-72%);
   visibility: hidden;
   transition: all 0.3s ease-in-out;
 }
 
 /* Open state - menu is visible */
 .menu-open {
-  transform: translateX(-70%);
+  transform: translateX(-72%);
   visibility: visible;
   transition: all 0.3s ease-in-out;
 }
