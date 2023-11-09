@@ -43,7 +43,7 @@ export default function NavBar() {
 
     return (
         <div className="flex justify-between p-5 bg-twm-logo-bg w-full h-full font-main">
-            <h1 onClick={handleClick} className='text-3xl text-twm-highlight my-auto ml-4 hover:cursor-pointer hover:scale-105 transition-transform duration-200 hover:text-twm-sun'>The World Machine</h1>
+            <h1 onClick={() => handleClick()} className='text-3xl text-twm-highlight my-auto ml-4 hover:cursor-pointer hover:scale-105 transition-transform duration-200 hover:text-twm-sun'>The World Machine</h1>
             
             {
                 isMobile ? (
