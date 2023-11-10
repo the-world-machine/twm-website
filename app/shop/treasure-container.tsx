@@ -34,7 +34,7 @@ export default function Treasure({ item, user, ownedTreasure, stockPrice, onPurc
                 <div>
                     <div className="flex mt-4">
                         {
-                            (user.wool >= item.price) ? (
+                            (user.wool >= newPrice) ? (
                                 <div onClick={() => onPurchase(item)} className='bg-glens-light rounded-xl mr-2 py-2 px-10 hover:cursor-pointer flex select-none'>
                                     Buy
                                 </div>

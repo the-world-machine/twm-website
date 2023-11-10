@@ -21,7 +21,7 @@ export default function NavBar() {
 
     useEffect(() => {
         const userAgent = window.navigator.userAgent;
-        const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+        const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows/i;
     
         setIsMobile(mobileRegex.test(userAgent));
       }, []);
@@ -31,7 +31,7 @@ export default function NavBar() {
             <div>
                 <Image onClick={() => openMenu()} src="/hamburger-mmm.svg" alt="menu" width={50} height={50} className='hover:scale-110 transition-transform duration-200 my-auto'/>
 
-                <div className={`absolute w-[250px] h-full bg-twm-logo-bg flex flex-col justify-evenly font-main origin-top-left ${open ? "menu-open" : "menu-hidden"}`}> 
+                <div className={`absolute w-[250px] h-full bg-twm-logo-bg flex flex-col justify-evenly font-main origin-top-left rounded-xl z-50 ${open ? "menu-open" : "menu-hidden"}`}> 
                     <RedirectButton text="Invite" page="/invite" />
                     <RedirectButton text="Shop" page="/shop" />
                     <RedirectButton text="Profile" page="/profile" />
