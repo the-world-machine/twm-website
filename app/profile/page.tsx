@@ -88,7 +88,7 @@ export default function Profile() {
         UpdateDatabase('profile_description', description, String(user.p_key));
         UpdateDatabase('equipped_background', backgroundID, String(user.p_key));
         UpdateDatabase('translation_language', translationLanguage, String(user.p_key));
-        UpdateDatabase('unlock_notifications', `{"bool_value": ${badgeNotifications}}`, String(user.p_key));
+        UpdateDatabase('unlock_notifications', String(badgeNotifications), String(user.p_key));
 
         setSaved(true);
         setSaveStatus('Changes have been saved!');
@@ -263,8 +263,7 @@ export default function Profile() {
           user.p_key = userID;
           
           const notifications = JSON.parse(user.unlock_notifications as string);
-          setBadgeNotifications(notifications.bool_value);
-
+          
           const unlockedBackgroundIDs = JSON.parse(user.unlocked_backgrounds as string);
     
           const backgroundPromises = unlockedBackgroundIDs.map((backgroundID: number) => fetchBackground(backgroundID + 1));
@@ -281,10 +280,7 @@ export default function Profile() {
           setTextLength(user.profile_description.length);
           setTranslationLanguage(user.translation_language);
           setProfileDescription(user.profile_description);
-
-          console.log(notifications.bool_value);
-
-          setBadgeNotifications(notifications.bool_value);
+          setBadgeNotifications(notifications);
 
           setUserData(user);
           setPageStatus('success');
