@@ -33,7 +33,6 @@ export default function NavBar() {
 
                 <div className={`absolute w-[250px] h-full bg-twm-logo-bg flex flex-col justify-evenly font-main origin-top-left rounded-xl z-50 ${open ? "menu-open" : "menu-hidden"}`}> 
                     <RedirectButton text="Invite" page="/invite" />
-                    <RedirectButton text="Shop" page="/shop" />
                     <RedirectButton text="Profile" page="/profile" />
                     <SignIn />
                 </div>
@@ -52,7 +51,6 @@ export default function NavBar() {
                     <div className='flex justify-between mx-10 my-auto'>
                         <div className='flex justify-between my-10'>
                             <RedirectButton text="Invite" page="/invite" />
-                            <RedirectButton text="Shop" page="/shop" />
                             <RedirectButton text="Profile" page="/profile" />
                         </div>
 
