@@ -1,7 +1,5 @@
-import Image from 'next/image'
 import { Background } from '../../components/database-parse-type'
 import { useState } from 'react'
-import { SelectOption } from '../select-menu'
 
 export default function BackgroundSelection({ ownedBackgrounds, equippedBackground, onChange }: { ownedBackgrounds: Background[], equippedBackground: Background, onChange: (background: Background) => void }) {
     
@@ -32,7 +30,7 @@ export default function BackgroundSelection({ ownedBackgrounds, equippedBackgrou
 
             <div className='flex overflow-x-auto max-w-[600px] mt-3 rounded-xl bg-refuge-light'>
                 {ownedBackgrounds.map((background) => (
-                    <Image key={background.p_key} className={'hover:cursor-pointer mx-2 my-3' + (background.p_key === equippedBackground.p_key ? ' bg-twm-highlight' : '')} onClick={() => UpdateBackground(background.p_key)} src={background.image} alt={background.name} width={100} height={0}/>
+                    <img key={background.p_key} className={'hover:cursor-pointer mx-2 my-3' + (background.p_key === equippedBackground.p_key ? ' bg-twm-highlight' : '')} onClick={() => UpdateBackground(background.p_key)} src={background.image} alt={background.name} width={100} height={0}/>
                 ))}
             </div>
         </div>

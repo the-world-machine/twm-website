@@ -29,10 +29,10 @@ export default function SignIn() {
 
     if (session) {
         return(
-            <div onClick={() => window.location.href = '/profile'} className='grid grid-cols-[20px_150px] place-content-center mx-8 my-10 bg-twm-highlight max-w-[200px] rounded-lg hover:cursor-pointer'>
+            <div onClick={() => signOut({callbackUrl: "/profile"})} className='grid grid-cols-[20px_150px] place-content-center mx-8 my-10 bg-twm-highlight max-w-[200px] rounded-lg hover:cursor-pointer'>
                 <Image src={session.user?.image ?? '/discord-mark-white.svg'} alt='discord' width={25} height={0} className="mx-5 my-2 rounded-full"/>
                 
-                <p className={`text-white my-[5px] mx-auto text-md text-ellipsis text-center`}>{session.user?.name}</p>
+                <p className={`text-white my-[5px] mx-auto text-md text-ellipsis text-center`}>Sign Out</p>
             </div>
         )
     }
