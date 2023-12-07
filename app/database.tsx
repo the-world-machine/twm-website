@@ -1,13 +1,16 @@
 'use server'
 import mysql from 'mysql2/promise';
 
+const connection = mysql.createPool({
+    host: process.env.NEXT_PUBLIC_DB_HOST,
+    user: process.env.NEXT_PUBLIC_DB_USERNAME,
+    password: process.env.NEXT_PUBLIC_DB_PASSWORD,
+    database: process.env.NEXT_PUBLIC_DB_NAME,
+});
+
 export async function Fetch(table: string, primary_key: any): Promise<any> {
-    const db = await mysql.createConnection({
-        host: process.env.NEXT_PUBLIC_DB_HOST,
-        user: process.env.NEXT_PUBLIC_DB_USERNAME,
-        password: process.env.NEXT_PUBLIC_DB_PASSWORD,
-        database: process.env.NEXT_PUBLIC_DB_NAME,
-    });
+
+    const db = await connection.getConnection();
     
     const allData: boolean = primary_key === 'all';
 
@@ -36,12 +39,8 @@ export async function Fetch(table: string, primary_key: any): Promise<any> {
 }
 
 export async function Update(table: string, column: string, primary_key: string, data: any) {
-    const db = await mysql.createConnection({
-        host: process.env.NEXT_PUBLIC_DB_HOST,
-        user: process.env.NEXT_PUBLIC_DB_USERNAME,
-        password: process.env.NEXT_PUBLIC_DB_PASSWORD,
-        database: process.env.NEXT_PUBLIC_DB_NAME,
-    });
+
+    const db = await connection.getConnection();
     
     const sql = `UPDATE ${table} SET ${column} = ? WHERE p_key = ${primary_key}`;
 
