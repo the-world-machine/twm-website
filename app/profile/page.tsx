@@ -1,14 +1,14 @@
 'use client'
 import NavBar from "../components/NavBar/nav-bar";
 import Footer from "../components/footer";
-import { UserInfo, UserData, Background } from "../components/database-parse-type";
+import { UserData, Background } from "../components/database-parse-type";
 import {useSession, signIn} from "next-auth/react";
 import axios from "axios";
 import React, { useCallback, useState } from "react";
-import Image from "next/image";
 import BackgroundSelection from "../components/profile/background-selector";
 import languages from './languages.json';
 import { signOut } from "next-auth/react";
+import { Fetch, Update } from "../database";
 
 export default function Profile() {
 
@@ -195,23 +195,15 @@ export default function Profile() {
       async function updateData() {
 
         try {
-          const response = await fetch('/api/db/update', {
-            method: 'POST',
-            headers: {
-              table: 'user_data',
-              p_key: userID,
-              column: column,
-              data: data,
-              key: process.env.NEXT_PUBLIC_DB_KEY as string
-            }
-          })
+          const response = await Update('user_data', column, userID, data)
 
-          if (response.status === 401 || response.status === 503) {
+          if (response === 'error') {
 
-            console.error('Error fetching data.')
+            console.error('Error updating data.')
           }
+
         } catch (error) {
-          console.error('Error fetching data:', error);
+          console.error('Error updating data:', error);
         }
       }
 
@@ -221,21 +213,13 @@ export default function Profile() {
     const getUserData = useCallback((userID: string) => {
       async function fetchBackground(backgroundID: number) {
         try {
-          const response = await fetch('/api/db/get', {
-            method: 'POST',
-            headers: {
-              table: 'Backgrounds',
-              p_key: backgroundID.toString(),
-              key: process.env.NEXT_PUBLIC_DB_KEY as string,
-            },
-          });
+          const response = await Fetch('Backgrounds', backgroundID);
     
-          if (response.status !== 200) {
+          if (response === null) {
             return null;
           }
-    
-          const backgroundData = JSON.parse(response.headers.get('data') as string);
-          return backgroundData;
+
+          return response[0];
         } catch (error) {
           console.error('Error fetching background data:', error);
           return null;
@@ -244,22 +228,15 @@ export default function Profile() {
     
       async function fetchData() {
         try {
-          const response = await fetch('/api/db/get', {
-            method: 'POST',
-            headers: {
-              table: 'user_data',
-              p_key: userID,
-              key: process.env.NEXT_PUBLIC_DB_KEY as string,
-            },
-          });
+          const response = await Fetch('user_data', userID);
     
-          if (response.status === 401 || response.status === 503) {
+          if (response === null) {
             console.error('Error fetching data');
             setPageStatus('error');
             return;
           }
     
-          const user = JSON.parse(response.headers.get('data') as string);
+          const user: UserData = response[0];
           user.p_key = userID;
           
           const notifications = JSON.parse(user.unlock_notifications as string);
@@ -320,6 +297,7 @@ export default function Profile() {
     }
 
     if (data?.access_token && !hasBeenCalled) {
+
       // Make the API call
       axios.get('https://discord.com/api/users/@me', {
         headers: {
