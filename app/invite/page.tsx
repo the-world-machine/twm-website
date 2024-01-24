@@ -4,7 +4,7 @@ import Image from "next/image";
 import NavBar from "../components/NavBar/nav-bar";
 import CommandPanel from "../components/command_panels/command-panels";
 import Footer from "../components/footer";
-import Desktop from "../page";
+import Desktop from "../components/desktop";
 import Window from "../components/window";
 
 export default function Invite() {

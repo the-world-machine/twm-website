@@ -9,7 +9,7 @@ import BackgroundSelection from "../components/profile/background-selector";
 import languages from './languages.json';
 import { signOut } from "next-auth/react";
 import { Fetch, GetBackgrounds, Update } from "../database";
-import Desktop from '../page';
+import Desktop from "../components/desktop";
 import Window from '../components/window';
 
 export default function Profile() {

@@ -1,5 +1,5 @@
 'use client'
-import Desktop from "../page"
+import Desktop from "../components/desktop";
 import Window from "../components/window"
 import icons from './icons.json';
 import { useCallback, useEffect, useState } from "react";
