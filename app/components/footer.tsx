@@ -1,13 +1,18 @@
-import Image from 'next/image'
+'use client'
+
+import DiscordLogin from './discord'
 
 export default function Footer() {
     return (
-        <div className="p-5 bg-black w-full h-30 font-main">
-            <div className='mt-3 ml-5 flex justify-evenly'>
-                <img src="/icon.png" alt="logo" width={30} height={50} className="my-auto"/>
-                <a href='/terms-and-conditions' className="mx-5 hover:text-twm-sun">Terms and Conditions<br/></a>
-                <a href='/privacy-policy' className="mx-5 hover:text-twm-sun">Privacy Policy<br/></a>
-                <a href='https://discord.gg/gtfeHfka5h' className="mx-5 hover:text-twm-sun">Support Server<br/></a>
+        <div className="window h-10 bottom-0 fixed w-screen z-20">
+            <div className="mt-[2px] flex justify-between">
+                <DiscordLogin/>
+                <p className='text-lg text-black right-5 hidden md:visible md:text-2xl md:mt-0'>The World Machine</p>
+
+                <div className='mr-2 my-auto'>
+                    <button onClick={() => window.location.href = '/privacy-policy'}>Privacy Policy</button>
+                    <button onClick={() => window.location.href = '/terms-and-conditions'}>Terms and Conditions</button>
+                </div>
             </div>
          </div>
     )

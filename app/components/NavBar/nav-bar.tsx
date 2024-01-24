@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image'
 import RedirectButton from './redirect-button'
-import SignIn from './discord'
 export default function NavBar() {
 
     const [open, setOpen] = useState(false);
@@ -34,7 +33,6 @@ export default function NavBar() {
                 <div className={`absolute w-[250px] h-full bg-twm-logo-bg flex flex-col justify-evenly font-main origin-top-left rounded-xl z-50 ${open ? "menu-open" : "menu-hidden"}`}> 
                     <RedirectButton text="Invite" page="/invite" />
                     <RedirectButton text="Profile" page="/profile" />
-                    <SignIn />
                 </div>
             </div>
         )
@@ -53,8 +51,6 @@ export default function NavBar() {
                             <RedirectButton text="Invite" page="/invite" />
                             <RedirectButton text="Profile" page="/profile" />
                         </div>
-
-                        <SignIn />
                     </div>
                 )
             }

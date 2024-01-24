@@ -1,23 +1,22 @@
 'use client'
-
-import Image from 'next/image'
-import NavBar from './components/NavBar/nav-bar'
 import Footer from './components/footer'
-import CommandPanel from './components/command_panels/command-panels'
+import Navigation from './components/navigation'
+import Window from './components/window'
 
-export default function Home() {
+interface PageProps {
+  children: React.ReactNode
+}
+
+export default function Desktop({ children }: PageProps) {
   return (
-    
-    <main className='bg-twm'>
-      <NavBar />
-      <div className='font-main my-32 mx-10'>
-        <h1 className='text-7xl text-twm-highlight'>The World Machine</h1>
-        <h1 className='text-3xl my-4'>a discord bot based off oneshot</h1>
-        <button onClick={() => window.location.href = '/invite'} className='bg-twm-highlight text-white p-3 rounded-lg hover:cursor-pointer hover:animate-pulse text-3xl my-5 mr-5'>Invite Now</button>
-        <button onClick={() => window.location.href = 'https://store.steampowered.com/app/420530/OneShot/'} className='bg-twm-highlight text-white p-3 rounded-lg hover:cursor-pointer hover:animate-pulse text-3xl my-10'>Buy OneShot</button>
-
+    <main className='desktop bg-[#167E95] h-screen'>
+      <div>{children}</div>
+      <Navigation/>
+      <div className='flex justify-between'>
+        <div/>
+        <p className='text-white text-2xl text-end'>The World Machine</p>
+        <div/>
       </div>
-      <div className='mt-96'></div>
       <Footer/>
     </main>
   )

@@ -20,19 +20,12 @@ export interface UserInfo {
 export interface UserData {
   p_key: string;
   gpt_limit: number;
-  daily_wool_timestamp: string;
-  daily_sun_timestamp: string;
-  gpt_timestamp: string;
-  unlock_notifications: string;
-  unlocked_backgrounds: number[] | string;
-  equipped_background: number;
+  badge_notifications: string;
+  owned_backgrounds: string[] | string;
+  equipped_bg: string;
   profile_description: string;
   wool: number;
   translation_language: string;
-  times_messaged: number;
-  times_shattered: number;
-  times_asked: number;
-  times_transmitted: number;
 }
 
 export interface NikogotchiData {
@@ -47,11 +40,8 @@ export interface NikogotchiData {
 }
 
 export interface Background {
-  p_key: number;
   name: string;
-  cost: number;
   image: string;
-  type: string;
 }
 
 export interface Item {

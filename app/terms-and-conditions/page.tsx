@@ -1,13 +1,13 @@
+'use client'
 import NavBar from "../components/NavBar/nav-bar";
 import Footer from "../components/footer";
 
 export default function PrivacyPolicy() {
     return (
-        <div>
-            <NavBar />
-                <div className='flex justify-center font-main my-32 mx-10'>
-                    <div className="w-[1000px]">
-                        <h1 className='text-5xl text-twm-sun text-center'>Terms and Conditions</h1>
+        <div className="bg-black h-max w-full">
+            <div className='font-main py-32 grid justify-center'>
+                <div className="px-5 w-auto max-w-[1000px]">
+                    <h1 className='text-5xl text-twm-sun text-center'>Terms and Conditions</h1>
                         <p className="text-md mt-14 text-center">
                             These Terms and Conditions ("Terms") govern your use of our services. By using our services, you agree to be bound by these Terms. If you do not agree with these Terms, please do not use our services.
 
@@ -50,9 +50,10 @@ export default function PrivacyPolicy() {
 
                             These Terms were last updated on November 1st, 2023.
                         </p>
-                    </div>
                 </div>
-            <Footer />
+
+                <button onClick={() => window.location.href = '/'} className='text-2xl text-black w-1/12 mx-auto mt-10'>Back</button>
+            </div>
         </div>
     )
 }

@@ -4,11 +4,13 @@ import Footer from "../components/footer";
 import { UserData, Background } from "../components/database-parse-type";
 import {useSession, signIn} from "next-auth/react";
 import axios from "axios";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import BackgroundSelection from "../components/profile/background-selector";
 import languages from './languages.json';
 import { signOut } from "next-auth/react";
-import { Fetch, Update } from "../database";
+import { Fetch, GetBackgrounds, Update } from "../database";
+import Desktop from '../page';
+import Window from '../components/window';
 
 export default function Profile() {
 
@@ -19,8 +21,11 @@ export default function Profile() {
     const [userData, setUserData] = useState<null | UserData>(null);
 
     // backgrounds
-    const [equippedBackground, setEquippedBackground] = useState<Background>({} as Background);
-    const [ownedBackgrounds, setBackgrounds] = useState<Background[]>([]);
+    const [equippedBackground, setEquippedBackground] = useState<string>('Default');
+    const [ownedBackgrounds, setBackgrounds] = useState<string[]>([]);
+
+    const [allBackgrounds, setAllBackgrounds] = useState<Background[]>([]);
+
     // saving changes
     const [saveStatus, setSaveStatus] = useState('...');
     const [saved, setSaved] = useState(true);
@@ -33,6 +38,38 @@ export default function Profile() {
     const [badgeNotifications, setBadgeNotifications] = useState(true);
 
     const { data, status } = useSession();
+
+    function LoadingPage(status: string) {
+
+      if (status === 'loading') {
+        return (
+          <Desktop>
+            <Window title='Profile' className="">
+              <div className="text-xl text-black">Authenticating...</div>
+            </Window>  
+          </Desktop>
+        )
+      } else if (status === 'error') {
+        return (
+          <Desktop>
+            <Window title='Error!' className="">
+              <div className="text-xl text-black">An error has occurred. Please try again later.</div>
+            </Window>  
+          </Desktop>
+        )
+      } else if (status === 'unauthenticated') {
+        return (
+          <Desktop>
+            <Window title='Error!' className="grid justify-center items-center">
+              <div className="text-xl text-black text-center">You need to be signed in to Discord to access this page!</div>
+              <div className="mx-auto mt-5 scale-120">
+                <button onClick={() => signIn('discord')}>Sign In</button> <button onClick={() => window.location.href = '/'}>Okay</button>
+              </div>
+            </Window>  
+          </Desktop>
+        )
+      }
+    }
 
     function Page(user: UserData) {
 
@@ -49,7 +86,7 @@ export default function Profile() {
 
       }
 
-      const updateBackground = (background: Background) => {
+      const updateBackground = (background: string) => {
         setEquippedBackground(background);
 
         setSaved(false);
@@ -66,8 +103,8 @@ export default function Profile() {
         setSaveStatus('You have unsaved changes!');
       }
 
-      const updateBadgeNotifications = () => {
-        setBadgeNotifications(!badgeNotifications);
+      const updateBadgeNotifications = (e: any) => {
+        setBadgeNotifications(e.target.checked);
 
         setSaved(false);
         setSaveStatus('You have unsaved changes!');
@@ -79,115 +116,79 @@ export default function Profile() {
           return;
         }
 
-        const backgroundID = equippedBackground?.p_key - 1;
-
         let description = profileDescription;
 
         console.log(description)
 
         UpdateDatabase('profile_description', description, String(user.p_key));
-        UpdateDatabase('equipped_background', backgroundID, String(user.p_key));
+        UpdateDatabase('equipped_bg', equippedBackground, String(user.p_key));
         UpdateDatabase('translation_language', translationLanguage, String(user.p_key));
-        UpdateDatabase('unlock_notifications', String(badgeNotifications), String(user.p_key));
+        UpdateDatabase('badge_notifications', String(badgeNotifications), String(user.p_key));
 
         setSaved(true);
         setSaveStatus('Changes have been saved!');
       }
 
       return(
-        <div className="bg-gradient-to-b from-refuge-dark to-twm-logo-bg">
-            <NavBar />
-
-            <div className='bg-refuge-light w-full sticky top-0 bg-opacity-100'>
-              <div className="font-main flex justify-center">
-                  <p className='text-xl text-center text-white mr-6 my-2'>{saveStatus}</p>
-                  <button
-                    onClick={SaveChanges}
-                    type="submit"
-                    className={saved ? 'bg-refuge-highlight opacity-40 text-white px-5 rounded-lg hover:cursor-not-allowed text-xl mb-2 my-2' : 'bg-refuge-highlight text-white rounded-lg px-5 hover:cursor-pointer hover:animate-pulse text-xl mb-2 my-2'}>
-                      Save Changes
-                  </button>
+        <Desktop>
+          <Window title='Profile' className="max-w-[500px]">
+              <div className='window w-full sticky top-0 bg-opacity-100'>
+                <div className="font-main flex justify-center">
+                    <p className='text-xl text-center text-black mr-6 my-2'>{saveStatus}</p>
+                    <button
+                      onClick={SaveChanges}
+                      type="submit"
+                      disabled={saved}
+                      className={saved ? 'hover:cursor-not-allowed text-xl mb-2 my-2' : 'text-xl mb-2 my-2'}>
+                        Save Changes
+                    </button>
+                </div>
               </div>
-            </div>
 
-            <div className='font-main my-32 mx-10 grid place-content-center'>
+              <div className='font-main my-10 mx-10 grid place-content-center'>
 
-                <h1 className='text-3xl ml-5 text-twm-sun text-center'>User Settings</h1>
+                  <h1 className='text-3xl ml-5 text-black text-center'>User Settings</h1>
 
-                <h1 className='text-xl text-refuge-highlight text-center mt-10 mb-5'>Change Translation Language</h1>
+                  <h1 className='text-xl text-black text-center mt-10 mb-5'>Change Translation Language</h1>
 
-                <select onChange={(e) => updateLanguage(e.currentTarget.value)} value={translationLanguage} className="text-white bg-refuge-highlight p-2 rounded-lg">
-                  {languages.map((language) => (
-                    <option key={language.value} value={language.value}>{language.name}</option>
-                  ))}
-                </select>
+                  <select title='Change the language displayed after translating a message.' onChange={(e) => updateLanguage(e.currentTarget.value)} value={translationLanguage} className="text-black h-6">
+                    {languages.map((language) => (
+                      <option key={language.value} value={language.value}>{language.name}</option>
+                    ))}
+                  </select>
 
-                <h1 className='text-xl text-refuge-highlight text-center mt-10 mb-5 outline-2'>Badge Notifications</h1>
-                <button onClick={() => updateBadgeNotifications()} className={badgeNotifications ? 'bg-refuge-highlight text-white rounded-lg text-xl mb-10' : 'bg-gray-200 opacity-40 text-black rounded-lg text-xl mb-10'}>
-                  {badgeNotifications ? 'Enabled' : 'Disabled'}
-                </button>
+                  <h1 className='text-xl text-black text-center mt-10 mb-5 outline-2'>Other Settings</h1>
+                  <div className="field-row mx-auto scale-150">
+                    <label className='text-black'><input title='Disable or enable badge notifications. If enabled, this will show you when you get a new badge.' type="checkbox" checked={badgeNotifications} onChange={updateBadgeNotifications} /> Badge Notifications</label>
+                  </div>
 
-                <hr className='my-10' />
+                  <hr className='my-10' />
 
-                <h1 className='text-3xl mt-2 text-twm-sun text-center'>Profile Settings</h1>
+                  <h1 className='text-3xl mt-2 text-black text-center'>Profile Settings</h1>
 
-                <h1 className='text-xl text-refuge-highlight text-center mt-5 mb-5'>Change Profile Description</h1>
-                <textarea
-                  id="description"
-                  name="description"
-                  defaultValue={user.profile_description}
-                  onChange={(e) => updateProfileDescription(e)}
-                  maxLength={100}
-                  className="resize-none text-white bg-refuge-light p-2 rounded-lg selection:border-4 mb-2"
-                />
-                <h1>{textLength}/100</h1>
+                  <h1 className='text-xl text-black text-center mt-5 mb-5'>Change Profile Description</h1>
+                  <textarea
+                    id="description"
+                    name="description"
+                    title='Change your profile description. This shows up when you run the /profile <user> command.'
+                    defaultValue={user.profile_description}
+                    onChange={(e) => updateProfileDescription(e)}
+                    maxLength={100}
+                    className="field-row resize-none text-black text-lg p-2 mb-2 text-center"
+                  />
+                  <h1 className='text-black text-sm'>{textLength}/100</h1>
 
-                <h1 className='text-xl text-refuge-highlight text-center mt-10 mb-5'>Change Profile Background</h1>
+                  <h1 className='text-xl text-black text-center mt-5 mb-5'>Change Profile Background</h1>
 
-                <BackgroundSelection ownedBackgrounds={ownedBackgrounds} equippedBackground={equippedBackground as Background} onChange={updateBackground} />
-                    
-                <hr className='my-10' />
-
-                <h1 className='text-3xl mt-6 ml-5 text-twm-sun text-center'>User Stats</h1>
-
-                <div className='flex justify-center mt-5'>
-                  <h1 className='text-xl text-refuge-highlight text-center'>Total Messages Sent:</h1>
-                  <p className='text-xl text-center ml-3'>{user.times_messaged}</p>
-                </div>
-                  
-                <div className='flex justify-center mt-5'>
-                  <h1 className='text-xl text-refuge-highlight text-center'>Total Times Shattered:</h1>
-                  <p className='text-xl text-center ml-3'>{user.times_shattered}</p>
-                </div>
-
-                <div className='flex justify-center mt-5'>
-                  <h1 className='text-xl text-refuge-highlight text-center'>Total Times Asked:</h1>
-                  <p className='text-xl text-center ml-3'>{user.times_asked}</p>
-                </div>
-
-                <div className='flex justify-center mt-5'>
-                  <h1 className='text-xl text-refuge-highlight text-center'>Total Times Transmitted:</h1>
-                  <p className='text-xl text-center ml-3'>{user.times_transmitted}</p>
-                </div>
-
-                <p onClick={() => signOut()} className='mt-20 text-xl hover:text-twm-sun cursor-pointer flex justify-center'>Sign Out</p>
-            </div>
-            <Footer />
-        </div>
+                  <BackgroundSelection ownedBackgrounds={ownedBackgrounds} equippedBackground={equippedBackground} allBackgrounds={allBackgrounds} onChange={updateBackground} />
+              </div>
+          </Window>
+        </Desktop>
       )
     }
     
     function ErrorPage() {
-      return(
-        <div>
-            <NavBar />
-            <div className='font-main my-32 mx-10 grid place-content-center'>
-                <h1 className='text-5xl text-twm-sun text-center'>Profile</h1>
-                <p className='text-xl mt-5 text-center'>An error has occurred. Please try again later.</p>
-            </div>
-            <Footer />
-        </div>
-      )
+      return LoadingPage('error');
     }
 
     const UpdateDatabase = useCallback((column: string, data: any, userID: string) => {
@@ -195,7 +196,7 @@ export default function Profile() {
       async function updateData() {
 
         try {
-          const response = await Update('user_data', column, userID, data)
+          const response = await Update('UserData', column, userID, data)
 
           if (response === 'error') {
 
@@ -210,131 +211,92 @@ export default function Profile() {
       updateData();
     }, [])
 
-    const getUserData = useCallback((userID: string) => {
-      async function fetchBackground(backgroundID: number) {
-        try {
-          const response = await Fetch('Backgrounds', backgroundID);
-    
-          if (response === null) {
-            return null;
-          }
+  const getUserData = useCallback((userID: string) => {
 
-          return response[0];
-        } catch (error) {
-          console.error('Error fetching background data:', error);
-          return null;
-        }
-      }
-    
-      async function fetchData() {
-        try {
-          const response = await Fetch('user_data', userID);
-    
-          if (response === null) {
-            console.error('Error fetching data');
-            setPageStatus('error');
-            return;
-          }
-    
-          const user: UserData = response[0];
-          user.p_key = userID;
-          
-          const notifications = JSON.parse(user.unlock_notifications as string);
-          
-          const unlockedBackgroundIDs = JSON.parse(user.unlocked_backgrounds as string);
-    
-          const backgroundPromises = unlockedBackgroundIDs.map((backgroundID: number) => fetchBackground(backgroundID + 1));
-    
-          const backgrounds = await Promise.all(backgroundPromises);
-          const equippedBackground = await fetchBackground(user.equipped_background + 1);
-    
-          // Filter out any null values (failed background fetches)
-          const filteredBackgrounds = backgrounds.filter((background) => background !== null);
-    
-          setBackgrounds(filteredBackgrounds);
-          setEquippedBackground(equippedBackground);
+    async function fetchData() {
+      try {
+        const response = await Fetch('UserData', userID);
 
-          setTextLength(user.profile_description.length);
-          setTranslationLanguage(user.translation_language);
-          setProfileDescription(user.profile_description);
-          setBadgeNotifications(notifications);
-
-          setUserData(user);
-          setPageStatus('success');
-        } catch (error) {
-          console.error('Error fetching data:', error);
+        if (response === null) {
+          console.error('Error fetching data');
           setPageStatus('error');
+          return;
         }
+
+        const backgrounds: any = await GetBackgrounds();
+
+        let all_bgs: any[] = [];
+
+        for (const bg in backgrounds) {
+          all_bgs.push({ name: bg, image: backgrounds[bg]['image'] });
+        }
+
+        setAllBackgrounds(all_bgs);
+
+        const user: UserData = response[0];
+        user.p_key = userID;
+
+        const notifications = JSON.parse(user.badge_notifications as string);
+
+        const unlockedBackgroundIDs = JSON.parse(user.owned_backgrounds as string);
+
+        setBackgrounds(unlockedBackgroundIDs);
+        setEquippedBackground(equippedBackground);
+
+        setTextLength(user.profile_description.length);
+        setTranslationLanguage(user.translation_language);
+        setProfileDescription(user.profile_description);
+        setBadgeNotifications(notifications);
+
+        setUserData(user);
+        setPageStatus('success');
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setPageStatus('error');
       }
-    
-      return fetchData();
-    }, []);
-
-    if (!data && status !== 'loading') {
-        return (
-            <div>
-                <NavBar />
-                <div className='font-main my-32 mx-10 grid place-content-center'>
-                    <h1 className='text-5xl text-twm-sun text-center'>Profile</h1>
-                    <p   className='text-xl mt-5 text-center'>You need to be signed in to access this page!</p>
-                    <button onClick={() => signIn('discord')} className='bg-refuge-highlight text-white p-3 rounded-lg hover:cursor-pointer hover:animate-pulse text-3xl my-10'>Sign In</button>
-                </div>
-                <Footer />
-            </div>
-        )
-    }
-    else if (status === 'loading') {
-        return (
-            <div>
-                <NavBar />
-                <div className='font-main my-32 mx-10 grid place-content-center'>
-                    <h1 className='text-5xl text-twm-sun text-center'>Profile</h1>
-                    <p className='text-xl mt-5 text-center'>Logging In...</p>
-                </div>
-                <Footer />
-            </div>
-        )
     }
 
-    if (data?.access_token && !hasBeenCalled) {
+    return fetchData();
+  }, []);
 
-      // Make the API call
-      axios.get('https://discord.com/api/users/@me', {
-        headers: {
-          Authorization: `Bearer ${data.access_token}`,
-        },
-      })
-      .then((response) => {
-        const user_data = response.data;
 
-        getUserData(user_data.id);
-      })
-      .catch((error) => {
-        console.error('Error fetching user data from Discord:', error);
-      });
-    
-      // Update the state variable to indicate that the function has been called
-      setBeenCalled(true);
-    }
+  if (!data && status !== 'loading') {
+      return LoadingPage('unauthenticated');
+  }
+  else if (status === 'loading') {
+      return LoadingPage('loading');
+  }
 
-    if (pageStatus === 'loading') {
-      return (
-            <div>
-                <NavBar />
-                <div className='font-main my-32 mx-10 grid place-content-center'>
-                    <h1 className='text-5xl text-twm-sun text-center'>Profile</h1>
-                    <p className='text-xl mt-5 text-center'>Fetching Profile Data...</p>
-                </div>
-                <Footer />
-            </div>
-      )
-    }
+  if (data?.access_token && !hasBeenCalled) {
 
-    if (pageStatus === 'error') {
-      return ErrorPage();
-    }
+    // Make the API call
+    axios.get('https://discord.com/api/users/@me', {
+      headers: {
+        Authorization: `Bearer ${data.access_token}`,
+      },
+    })
+    .then((response) => {
+      const user_data = response.data;
 
-    if (pageStatus === 'success') {
-      return Page(userData as UserData);
-    }
+      getUserData(user_data.id);
+    })
+    .catch((error) => {
+      console.error('Error fetching user data from Discord:', error);
+    });
+  
+    // Update the state variable to indicate that the function has been called
+    setBeenCalled(true);
+  }
+
+  if (pageStatus === 'loading') {
+    return LoadingPage('loading');
+  }
+
+  if (pageStatus === 'error') {
+    return ErrorPage();
+  }
+
+  if (pageStatus === 'success') {
+    return Page(userData as UserData);
+  }
 }

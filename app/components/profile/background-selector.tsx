@@ -1,16 +1,16 @@
 import { Background } from '../../components/database-parse-type'
 import { useState } from 'react'
 
-export default function BackgroundSelection({ ownedBackgrounds, equippedBackground, onChange }: { ownedBackgrounds: Background[], equippedBackground: Background, onChange: (background: Background) => void }) {
+export default function BackgroundSelection({ ownedBackgrounds, equippedBackground, allBackgrounds, onChange }: { ownedBackgrounds: string[], equippedBackground: string, allBackgrounds: Background[], onChange: (background: string) => void }) {
     
     const [selectedBackground, setSelectedBackground] = useState(equippedBackground);
 
-    const UpdateBackground = (e: number) => {
+    const UpdateBackground = (e: string) => {
         // Get the selected background ID from the event
         const selectedBackgroundID = e;
         
         // Find the selected background object from the ownedBackgrounds array
-        const selectedBackground = ownedBackgrounds.find((background) => background.p_key === Number(selectedBackgroundID));
+        const selectedBackground = ownedBackgrounds.find((background) => background === selectedBackgroundID);
     
         if (selectedBackground) {
             // For example, set the equippedBackground to the selected background
@@ -20,17 +20,20 @@ export default function BackgroundSelection({ ownedBackgrounds, equippedBackgrou
             onChange(selectedBackground);
         }
     }
+
+    const selectedBackgroundData = allBackgrounds.find((background) => background.name === selectedBackground);
+    const ownedBackgroundsData = allBackgrounds.filter((background) => ownedBackgrounds.includes(background.name));
     
     return (
         <div className='grid place-items-center font-main'>
 
-            <h1>Currently Selected: {selectedBackground.name}</h1>
+            <h1 className='text-black text-lg'>Currently Selected: {selectedBackground}</h1>
 
-            <img src={selectedBackground.image} alt={selectedBackground.name} width={300} height={0} className='mt-2 mx-5 bg-refuge-light'/>
+            <img src={selectedBackgroundData?.image} alt={selectedBackground} width={300} height={0} className='mt-2 mx-5'/>
 
-            <div className='flex overflow-x-auto max-w-[600px] mt-3 rounded-xl bg-refuge-light'>
-                {ownedBackgrounds.map((background) => (
-                    <img key={background.p_key} className={'hover:cursor-pointer mx-2 my-3' + (background.p_key === equippedBackground.p_key ? ' bg-twm-highlight' : '')} onClick={() => UpdateBackground(background.p_key)} src={background.image} alt={background.name} width={100} height={0}/>
+            <div className='flex overflow-x-auto max-w-[600px] mt-3 bg-[#939393] border-2 border-slate-600'>
+                {ownedBackgroundsData.map((background) => (
+                    <img key={background.name} className={'hover:cursor-pointer mx-2 my-3'} onClick={() => UpdateBackground(background.name)} src={background.image} alt={background.name} width={100} height={0}/>
                 ))}
             </div>
         </div>
