@@ -1,80 +1,55 @@
 'use server'
-import mysql, { RowDataPacket } from 'mysql2/promise';
 import axios from 'axios';
-import { LeaderboardUser } from './leaderboards/page';
+import { Collection, MongoClient, ObjectId } from 'mongodb';
+import { UserData } from './components/database-parse-type'
 
-const connection = mysql.createPool({
-    host: process.env.NEXT_PUBLIC_DB_HOST,
-    user: process.env.NEXT_PUBLIC_DB_USERNAME,
-    password: process.env.NEXT_PUBLIC_DB_PASSWORD,
-    database: process.env.NEXT_PUBLIC_DB_NAME,
-});
+let collection: null | Collection<UserData> = null
 
-export async function Fetch(table: string, primary_key: any): Promise<any> {
+async function connectToDatabase() {
 
-    const db = await connection.getConnection();
-    
-    const allData: boolean = primary_key === 'all';
+    if (collection != null) { return collection }
 
-    let query = '';
-    if (allData) {
-        query = `SELECT * FROM ${table}`;
-    } else {
-        query = `SELECT * FROM ${table} WHERE p_key = ?`;
+    const uri = process.env.NEXT_PUBLIC_DB_URI as string
+
+    const mongoDBClient: MongoClient = new MongoClient(uri)
+
+    await mongoDBClient.connect()
+
+    const db = mongoDBClient.db('TheWorldMachine')
+
+    return db.collection<UserData>('UserData')
+}
+
+export async function Fetch(user: string): Promise<UserData | null> {
+    const user_data_collection = await connectToDatabase();
+    const userDataFromDB = await user_data_collection.findOne({ _id: user });
+
+    // Check if userDataFromDB is not null
+    if (userDataFromDB) {
+        // Use type assertion here
+        return userDataFromDB;
     }
-
-    let result: any = [];
-
-    try {
-        result = await db.query(query, [primary_key]);
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    } finally {
-        db.release();
-    }
-
-    if (result != null && result[0].length > 0) {
-        return result[0];
-    } else {
-        const discordData = await GetDiscordData(primary_key);
-        query = `INSERT INTO ${table} (p_key, username) VALUES (?, ?)`; 
-        result = await db.execute(query, [primary_key, discordData.global_name]);
-        return await Fetch(table, primary_key);
+    else {
+        const defaultData = new UserData()
+        await user_data_collection.insertOne({ _id: user, ...defaultData })
+        return Fetch(user)
     }
 }
 
-export async function Update(table: string, column: string, primary_key: string, data: any) {
 
-    const db = await connection.getConnection();
+export async function Update(user: UserData) {
+    const user_data_collection = await connectToDatabase();
 
-    const discordData = await GetDiscordData(data.id);
+    console.log(user)
     
-    const sql = `UPDATE ${table} SET ${column} = ? WHERE p_key = ${primary_key}`;
-
     try {
-        await db.execute(sql, [data]);
-        return 'success';
+        const result = await user_data_collection.updateOne({ _id: user._id }, { $set: {...user} })
+        console.log(result.matchedCount)
     } catch (error) {
-        console.error('Error updating data:', error);
-        return 'error';
+        console.error('Error updating database: ' + error)
     }
-}
 
-export async function GetLeaderboard(): Promise<any> {
-
-    const db = await connection.getConnection();
-    
-    const sql = `SELECT username, wool, suns, times_transmitted, times_asked, times_shattered FROM UserData`;
-
-    try {
-        const result = await db.query(sql);
-        const userList: any = result[0];
-
-        return userList;
-    } catch (error) {
-        console.error('Error fetching leaderboard data:', error);
-        return null;
-    }
+    console.log(user)
 }
 
 export async function GetDiscordData(userID: string) {

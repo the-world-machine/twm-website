@@ -4,15 +4,10 @@ import DiscordLogin from './discord'
 
 export default function Footer() {
     return (
-        <div className="window h-10 bottom-0 fixed w-screen z-20">
-            <div className="mt-[2px] flex justify-between">
+        <div className="window h-12 bottom-0 fixed w-screen z-20">
+            <div className="flex justify-between mt-1">
                 <DiscordLogin/>
-                <p className='text-lg text-black right-5 hidden md:visible md:text-2xl md:mt-0'>The World Machine</p>
-
-                <div className='mr-2 my-auto'>
-                    <button onClick={() => window.location.href = '/privacy-policy'}>Privacy Policy</button>
-                    <button onClick={() => window.location.href = '/terms-and-conditions'}>Terms and Conditions</button>
-                </div>
+                <div className='text-black right-5 text-sm md:text-xl mx-auto my-auto'>The World Machine</div>
             </div>
          </div>
     )

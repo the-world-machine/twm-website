@@ -1,229 +1,250 @@
 'use client'
-import NavBar from "../components/NavBar/nav-bar";
-import Footer from "../components/footer";
-import { UserData, Background } from "../components/database-parse-type";
-import {useSession, signIn} from "next-auth/react";
+
 import axios from "axios";
-import React, { useCallback, useEffect, useState } from "react";
-import BackgroundSelection from "../components/profile/background-selector";
-import languages from './languages.json';
-import { signOut } from "next-auth/react";
-import { Fetch, GetBackgrounds, Update } from "../database";
+import { useSession, signIn, getSession } from "next-auth/react";
+import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
+
+import { Fetch as fetchFromDatabase, GetBackgrounds, Update as updateToDatabase } from "../database";
+import { UserData, Background } from "../components/database-parse-type";
+
 import Desktop from "../components/desktop";
 import Window from '../components/window';
+import BackgroundSelection from "../components/profile/background-selector";
+import languages from './languages.json';
 
 export default function Profile() {
+  
+  const [pageStatus, setPageStatus] = useState('loading');
 
-    // initialization
-    const [hasBeenCalled, setBeenCalled] = useState(false);
-    
-    const [pageStatus, setPageStatus] = useState('loading');
-    const [userData, setUserData] = useState<null | UserData>(null);
+  const [userData, setUserData] = useState<null | UserData>(null);
+  const [userToUpdate, setUserToUpdate] = useState<null | UserData>(null);
 
-    // backgrounds
-    const [equippedBackground, setEquippedBackground] = useState<string>('Default');
-    const [ownedBackgrounds, setBackgrounds] = useState<string[]>([]);
+  const [userID, setUserID] = useState<null | string>(null);
+  const [saveToDatabase, setSaveToDatabase] = useState<boolean>(false);
 
-    const [allBackgrounds, setAllBackgrounds] = useState<Background[]>([]);
+  const [allBackgrounds, setAllBackgrounds] = useState<Background[]>([]);
+  const [textLength, setTextLength] = useState<number>(0);
+  const [checked, setChecked] = useState(false);
 
-    // saving changes
-    const [saveStatus, setSaveStatus] = useState('...');
-    const [saved, setSaved] = useState(true);
+  // saving changes
+  const [saveStatus, setSaveStatus] = useState('...');
+  const [saved, setSaved] = useState(true);
 
-    const [textLength, setTextLength] = useState(0);
-    const [profileDescription, setProfileDescription] = useState('');
+  function PageStatus(status: string) {
 
-    const [translationLanguage, setTranslationLanguage] = useState('english');
-     
-    const [badgeNotifications, setBadgeNotifications] = useState(true);
-
-    const { data, status } = useSession();
-
-    function LoadingPage(status: string) {
-
-      if (status === 'loading') {
-        return (
-          <Desktop>
-            <Window title='Profile' className="">
-              <div className="text-xl text-black">Authenticating...</div>
-            </Window>  
-          </Desktop>
-        )
-      } else if (status === 'error') {
-        return (
-          <Desktop>
-            <Window title='Error!' className="">
-              <div className="text-xl text-black">An error has occurred. Please try again later.</div>
-            </Window>  
-          </Desktop>
-        )
-      } else if (status === 'unauthenticated') {
-        return (
-          <Desktop>
-            <Window title='Error!' className="grid justify-center items-center">
-              <div className="text-xl text-black text-center">You need to be signed in to Discord to access this page!</div>
-              <div className="mx-auto mt-5 scale-120">
-                <button onClick={() => signIn('discord')}>Sign In</button> <button onClick={() => window.location.href = '/'}>Okay</button>
-              </div>
-            </Window>  
-          </Desktop>
-        )
-      }
-    }
-
-    function Page(user: UserData) {
-
-      const updateProfileDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        
-        setProfileDescription(e.target.value);
-
-        setTextLength(e.target.value.length);
-
-        console.log(profileDescription);
-
-        setSaved(false);
-        setSaveStatus('You have unsaved changes!');
-
-      }
-
-      const updateBackground = (background: string) => {
-        setEquippedBackground(background);
-
-        setSaved(false);
-        setSaveStatus('You have unsaved changes!');
-      }
-
-      const updateLanguage = (language: string) => {
-
-        console.log(language)
-
-        setTranslationLanguage(language);
-
-        setSaved(false);
-        setSaveStatus('You have unsaved changes!');
-      }
-
-      const updateBadgeNotifications = (e: any) => {
-        setBadgeNotifications(e.target.checked);
-
-        setSaved(false);
-        setSaveStatus('You have unsaved changes!');
-      }
-
-      const SaveChanges = () => {
-
-        if (saved) {
-          return;
-        }
-
-        let description = profileDescription;
-
-        console.log(description)
-
-        UpdateDatabase('profile_description', description, String(user.p_key));
-        UpdateDatabase('equipped_bg', equippedBackground, String(user.p_key));
-        UpdateDatabase('translation_language', translationLanguage, String(user.p_key));
-        UpdateDatabase('badge_notifications', String(badgeNotifications), String(user.p_key));
-
-        setSaved(true);
-        setSaveStatus('Changes have been saved!');
-      }
-
-      return(
+    if (status === 'authenticating') {
+      return (
         <Desktop>
-          <Window title='Profile' className="max-w-[500px]">
-              <div className='window w-full sticky top-0 bg-opacity-100'>
-                <div className="font-main flex justify-center">
-                    <p className='text-xl text-center text-black mr-6 my-2'>{saveStatus}</p>
-                    <button
-                      onClick={SaveChanges}
-                      type="submit"
-                      disabled={saved}
-                      className={saved ? 'hover:cursor-not-allowed text-xl mb-2 my-2' : 'text-xl mb-2 my-2'}>
-                        Save Changes
-                    </button>
-                </div>
-              </div>
-
-              <div className='font-main my-10 mx-10 grid place-content-center'>
-
-                  <h1 className='text-3xl ml-5 text-black text-center'>User Settings</h1>
-
-                  <h1 className='text-xl text-black text-center mt-10 mb-5'>Change Translation Language</h1>
-
-                  <select title='Change the language displayed after translating a message.' onChange={(e) => updateLanguage(e.currentTarget.value)} value={translationLanguage} className="text-black h-6">
-                    {languages.map((language) => (
-                      <option key={language.value} value={language.value}>{language.name}</option>
-                    ))}
-                  </select>
-
-                  <h1 className='text-xl text-black text-center mt-10 mb-5 outline-2'>Other Settings</h1>
-                  <div className="field-row mx-auto scale-150">
-                    <label className='text-black'><input title='Disable or enable badge notifications. If enabled, this will show you when you get a new badge.' type="checkbox" checked={badgeNotifications} onChange={updateBadgeNotifications} /> Badge Notifications</label>
-                  </div>
-
-                  <hr className='my-10' />
-
-                  <h1 className='text-3xl mt-2 text-black text-center'>Profile Settings</h1>
-
-                  <h1 className='text-xl text-black text-center mt-5 mb-5'>Change Profile Description</h1>
-                  <textarea
-                    id="description"
-                    name="description"
-                    title='Change your profile description. This shows up when you run the /profile <user> command.'
-                    defaultValue={user.profile_description}
-                    onChange={(e) => updateProfileDescription(e)}
-                    maxLength={100}
-                    className="field-row resize-none text-black text-lg p-2 mb-2 text-center"
-                  />
-                  <h1 className='text-black text-sm'>{textLength}/100</h1>
-
-                  <h1 className='text-xl text-black text-center mt-5 mb-5'>Change Profile Background</h1>
-
-                  <BackgroundSelection ownedBackgrounds={ownedBackgrounds} equippedBackground={equippedBackground} allBackgrounds={allBackgrounds} onChange={updateBackground} />
-              </div>
-          </Window>
+          <Window title='Profile' className="">
+            <div className="text-xl text-black">Authenticating...</div>
+          </Window>  
+        </Desktop>
+      )
+    } else if (status === 'loading') {
+      return (
+        <Desktop>
+          <Window title='Profile' className="">
+            <div className="text-xl text-black">Loading...</div>
+          </Window>  
+        </Desktop>
+      )
+    } else if (status === 'authenticated') {
+      return (
+        <Desktop>
+          <Window title='Profile' className="">
+            <div className="text-xl text-black">Loading Profile...</div>
+          </Window>  
+        </Desktop>
+      )
+    } else if (status === 'error') {
+      return (
+        <Desktop>
+          <Window title='Error!' className="">
+            <div className="text-xl text-black">An error has occurred. Please try again later.</div>
+          </Window>  
+        </Desktop>
+      )
+    } else if (status === 'unauthenticated') {
+      return (
+        <Desktop>
+          <Window title='Error!' className="grid justify-center items-center">
+            <div className="text-xl text-black text-center">You need to be signed in to Discord to access this page!</div>
+            <div className="mx-auto mt-5 scale-120">
+              <button onClick={() => signIn('discord')}>Sign In</button> <button onClick={() => window.location.href = '/'}>Okay</button>
+            </div>
+          </Window>  
         </Desktop>
       )
     }
-    
-    function ErrorPage() {
-      return LoadingPage('error');
+  }
+
+  function Page() {
+
+    const saveChanges = () => {
+
+      setSaveToDatabase(true);
+
+      setUserData(userToUpdate);
+      setSaveStatus('...');
+      setSaved(true);
     }
 
-    const UpdateDatabase = useCallback((column: string, data: any, userID: string) => {
+    const shouldSave = (data: any) => {
+      
+      setUserToUpdate((prevUser) => ({ ...prevUser, ...data } as UserData))
 
-      async function updateData() {
+      setSaveStatus('You have unsaved changes!');
+      setSaved(false);
+    }
 
-        try {
-          const response = await Update('UserData', column, userID, data)
+    const updateLanguage = (value: string) => {
+      shouldSave({ translation_language: value });
+    }
 
-          if (response === 'error') {
+    const updateProfileDescription = (event: ChangeEvent<HTMLTextAreaElement>) => {
+      shouldSave({ profile_description: event.target.value });
+      setTextLength(event.target.value.length) // i dislike it even more.
+    }
 
-            console.error('Error updating data.')
-          }
+    const updateBadgeNotifications = (e: any) => {
+      shouldSave({ badge_notifications: e.target.checked });
+      setChecked(e.target.checked);
+    }
 
-        } catch (error) {
-          console.error('Error updating data:', error);
-        }
+    const updateBackground = (background: string) => {
+      shouldSave({ equipped_bg: background });
+    }
+
+    return (
+      <Desktop>
+        <Window title='Profile' className="max-w-[500px]">
+            <div className='window w-full sticky top-0 bg-opacity-100'>
+              <div className="font-main flex justify-center">
+                  <p className='text-sm md:text-xl text-center text-black mr-6 my-auto'>{saveStatus}</p>
+                  <button
+                    onClick={saveChanges}
+                    type="submit"
+                    disabled={saved}
+                    className={saved ? 'hover:cursor-not-allowed text-xl mb-2 my-2' : 'text-xl mb-2 my-2'}>
+                      Save Changes
+                  </button>
+              </div>
+            </div>
+
+            <div className='font-main my-10 mx-10 grid place-content-center'>
+
+                <h1 className='text-3xl ml-5 text-black text-center'>User Settings</h1>
+
+                <h1 className='text-xl text-black text-center mt-10 mb-5'>Change Translation Language</h1>
+
+                <select title='Change the language displayed after translating a message.' value={userToUpdate?.translation_language} onChange={(e) => updateLanguage(e.currentTarget.value)} className="text-black h-6">
+                  {languages.map((language) => (
+                    <option key={language.value} value={language.value}>{language.name}</option>
+                  ))}
+                </select>
+
+                <h1 className='text-xl text-black text-center mt-10 mb-5 outline-2'>Other Settings</h1>
+                <div className="field-row mx-auto scale-150">
+                  <label className='text-black'><input title='Disable or enable badge notifications. If enabled, this will show you when you get a new badge.' type="checkbox" checked={checked} onChange={updateBadgeNotifications} /> Badge Notifications</label>
+                </div>
+
+                <hr className='my-10' />
+
+                <h1 className='text-3xl mt-2 text-black text-center'>Profile Settings</h1>
+
+                <h1 className='text-xl text-black text-center mt-5 mb-5'>Change Profile Description</h1>
+                <textarea
+                  id="description"
+                  name="description"
+                  title='Change your profile description. This shows up when you run the /profile <user> command.'
+                  defaultValue={userToUpdate?.profile_description}
+                  onChange={(e) => updateProfileDescription(e)}
+                  maxLength={100}
+                  className="field-row resize-none text-black text-lg p-2 mb-2 text-center"
+                />
+                <h1 className='text-black text-sm'>{textLength}/100</h1>
+
+                <h1 className='text-xl text-black text-center mt-5 mb-5'>Change Profile Background</h1>
+
+                <BackgroundSelection ownedBackgrounds={userToUpdate?.owned_backgrounds ?? ["Default"]} equippedBackground={userToUpdate?.equipped_bg ?? "Default"} allBackgrounds={allBackgrounds} onChange={updateBackground} />
+            </div>
+        </Window>
+      </Desktop>
+    )
+  }
+
+  const { data: discordData, status } = useSession()
+
+  useEffect(() => {
+    const login = async () => {
+
+      if (pageStatus === 'success') { return; } // We don't need to get discord data when page is successfully loaded.
+
+      if (status === 'loading') {
+        setPageStatus('loading');
+        return;
       }
 
-      updateData();
-    }, [])
+      setPageStatus('authenticating');
 
-  const getUserData = useCallback((userID: string) => {
-
-    async function fetchData() {
       try {
-        const response = await Fetch('UserData', userID);
 
-        if (response === null) {
-          console.error('Error fetching data');
-          setPageStatus('error');
+        if (!discordData) { // If discordData is null, then user has not signed in to the website.
+          setPageStatus('unauthenticated')
           return;
         }
 
-        const backgrounds: any = await GetBackgrounds();
+        if (!discordData?.access_token) { return } // If there's no access token then we don't need to do anything yet.
+
+        const response = await axios.get('https://discord.com/api/users/@me', { headers: { Authorization: `Bearer ${discordData.access_token}` } })
+
+        setUserID(response.data.id)
+      }
+      catch (error) {
+        console.error('Error fetching data from discord:', error);
+        setPageStatus('error')
+      }
+    }
+
+    login();
+
+  }, [discordData]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+
+        if (!userID) { return; } // Don't do anything if we don't have the userID yet.
+
+        if (pageStatus === 'success') { return; }
+
+        setPageStatus('authenticated')
+
+        const data = await fetchFromDatabase(userID);
+
+        if (!data) {
+          console.error('For some reason data was never fetched.');
+          setPageStatus('error'); // Run error scenario if data doesn't exist... for whatever reason.
+          return
+        }
+
+        setUserData(data as UserData)
+
+        // Set fucking text length because haha funny react won't rerender unless i do this
+
+        setTextLength(data.profile_description.length)
+        setChecked(data.badge_notifications);
+        setUserToUpdate({ ...data } as UserData)
+
+        // Fetch backgrounds as well.
+
+        const backgrounds = await GetBackgrounds();
+
+        if (!backgrounds) {
+          console.error('We couldn\'t get the backgrounds for some reason...');
+          setPageStatus('error');
+          return
+        }
 
         let all_bgs: any[] = [];
 
@@ -233,70 +254,35 @@ export default function Profile() {
 
         setAllBackgrounds(all_bgs);
 
-        const user: UserData = response[0];
-        user.p_key = userID;
-
-        const notifications = JSON.parse(user.badge_notifications as string);
-
-        const unlockedBackgroundIDs = JSON.parse(user.owned_backgrounds as string);
-
-        setBackgrounds(unlockedBackgroundIDs);
-        setEquippedBackground(equippedBackground);
-
-        setTextLength(user.profile_description.length);
-        setTranslationLanguage(user.translation_language);
-        setProfileDescription(user.profile_description);
-        setBadgeNotifications(notifications);
-
-        setUserData(user);
         setPageStatus('success');
+
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching data from database:', error);
         setPageStatus('error');
       }
+
     }
 
-    return fetchData();
-  }, []);
+    fetchData();
 
+  }, [userID])
 
-  if (!data && status !== 'loading') {
-      return LoadingPage('unauthenticated');
-  }
-  else if (status === 'loading') {
-      return LoadingPage('loading');
-  }
+  useEffect(() => {
+    const updateData = async () => {
+      if (!saveToDatabase) { return; } // We don't need to update the database if the database doesn't need updating.
+      if (!userData) { return; } // Likewise if we don't have user data.
 
-  if (data?.access_token && !hasBeenCalled) {
+      await updateToDatabase(userData);
 
-    // Make the API call
-    axios.get('https://discord.com/api/users/@me', {
-      headers: {
-        Authorization: `Bearer ${data.access_token}`,
-      },
-    })
-    .then((response) => {
-      const user_data = response.data;
+      setSaveToDatabase(false);
+    }
 
-      getUserData(user_data.id);
-    })
-    .catch((error) => {
-      console.error('Error fetching user data from Discord:', error);
-    });
-  
-    // Update the state variable to indicate that the function has been called
-    setBeenCalled(true);
-  }
-
-  if (pageStatus === 'loading') {
-    return LoadingPage('loading');
-  }
-
-  if (pageStatus === 'error') {
-    return ErrorPage();
-  }
+    updateData();
+  }, [saveToDatabase])
 
   if (pageStatus === 'success') {
-    return Page(userData as UserData);
+    return Page();
+  } else {
+    return PageStatus(pageStatus)
   }
 }

@@ -5,7 +5,6 @@ import icons from './icons.json';
 import { useCallback, useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import axios from "axios";
-import { Fetch, GetDiscordData, GetLeaderboard } from "../database";
 
 export interface LeaderboardUser {
     username: string;
