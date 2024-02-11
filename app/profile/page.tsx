@@ -120,7 +120,7 @@ export default function Profile() {
         <Window title='Profile' className="max-w-[500px]">
             <div className='window w-full sticky top-0 bg-opacity-100'>
               <div className="font-main flex justify-center">
-                  <p className='text-sm md:text-xl text-center text-black mr-6 my-auto'>{saveStatus}</p>
+                  <p className='text-sm sm:text-xl text-center text-black mr-6 my-auto'>{saveStatus}</p>
                   <button
                     onClick={saveChanges}
                     type="submit"

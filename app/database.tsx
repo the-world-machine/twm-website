@@ -1,7 +1,7 @@
 'use server'
 import axios from 'axios';
 import { Collection, MongoClient, ObjectId } from 'mongodb';
-import { UserData } from './components/database-parse-type'
+import { UserData, LeaderboardUser } from './components/database-parse-type'
 
 let collection: null | Collection<UserData> = null
 
@@ -50,6 +50,35 @@ export async function Update(user: UserData) {
     }
 
     console.log(user)
+}
+
+export async function GetLeaderboard(sortBy: string) {
+    
+    const user_data_collection = await connectToDatabase();
+
+    const leaderboard: LeaderboardUser[] = []
+
+    try {
+        const cursor = await user_data_collection.aggregate([{ $sort: { [sortBy]: -1 } }, { $limit: 10 }])
+
+        const result = await cursor.toArray();
+
+        const userPromises = result.map(async (doc) => {
+            const user = await GetDiscordData(doc._id);
+
+            return { name: user.username, data: { ...doc } as UserData };
+        });
+
+        // Use Promise.all to wait for all promises to resolve
+        const leaderboardData = await Promise.all(userPromises);
+
+        // Push the resolved data to the leaderboard array
+        leaderboard.push(...leaderboardData);
+    } catch (error) {
+        console.error('Error getting leaderboard data ' + error);
+    }
+
+    return leaderboard;
 }
 
 export async function GetDiscordData(userID: string) {

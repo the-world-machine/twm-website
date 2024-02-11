@@ -27,6 +27,11 @@ export class UserData {
   ) {}
 }
 
+export interface LeaderboardUser {
+  name: string,
+  data: UserData
+}
+
 export function ParseType(data: string) {
   try {
     return Number(data)

@@ -5,15 +5,8 @@ import icons from './icons.json';
 import { useCallback, useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import axios from "axios";
-
-export interface LeaderboardUser {
-    username: string;
-    wool: number;
-    suns: number;
-    times_shattered: number;
-    times_asked: number;
-    times_transmitted: number;
-}
+import { GetLeaderboard } from "../database";
+import { UserData, LeaderboardUser } from "../components/database-parse-type";
 
 function Title({children} : {children: React.ReactNode}) {
     return(
@@ -59,12 +52,12 @@ function TableItem({item} : {item: string}) {
 
     return (
         <div className="flex justify-center bg-white border-2 text-black">
-            <p className="text-lg mx-2">{item}</p>
+            <p className="text-sm sm:text-lg mx-2">{item}</p>
         </div>
     )
 }
 
-function LoadingPage(status: string) {
+function PageStatus(status: string) {
 
     if (status === 'loading') {
         return (
@@ -105,7 +98,6 @@ function LoadingPage(status: string) {
 }
 
 function Page(
-    user: LeaderboardUser | undefined,
     wool: LeaderboardUser[],
     suns: LeaderboardUser[],
     times_shattered: LeaderboardUser[],
@@ -115,7 +107,8 @@ function Page(
     return (
         <Desktop>
             <Window title="Leaderboards" className="max-w-[700px]">
-                <Title>Leaderboard</Title>
+                <Title>Global Leaderboards</Title>
+                <p className='text-center text-black'>(Loading may take a while.)</p>
                 <div className="mt-5"/>
                 <Header><p className='text-xl mr-2'>Wool</p> <img src={icons.wool_icon}/></Header>
                 <div className="mt-2"/>
@@ -173,13 +166,13 @@ function AssignToLeaderboard(leaderboard: string, users: LeaderboardUser[]) {
                     <TableColumn>
                         <TableHeader name='User'/>
                         {users.map((user, index) => (
-                            <TableItem item={user.username} key={index}/>
+                            <TableItem item={user.name} key={index}/>
                         ))}
                     </TableColumn>
                     <TableColumn>
                         <TableHeader name='Wool'/>
                         {users.map((user, index) => (
-                            <TableItem item={String(user.wool.toLocaleString(undefined))} key={index}/>
+                            <TableItem item={String(user.data.wool.toLocaleString(undefined))} key={index}/>
                         ))}
                     </TableColumn>
                 </TWMTable>
@@ -217,13 +210,13 @@ function AssignToLeaderboard(leaderboard: string, users: LeaderboardUser[]) {
                     <TableColumn>
                         <TableHeader name='User'/>
                         {users.map((user, index) => (
-                            <TableItem item={user.username} key={index}/>
+                            <TableItem item={user.name} key={index}/>
                         ))}
                     </TableColumn>
                     <TableColumn>
                         <TableHeader name='Suns'/>
                         {users.map((user, index) => (
-                            <TableItem item={String(user.suns.toLocaleString(undefined))} key={index}/>
+                            <TableItem item={String(user.data.suns.toLocaleString(undefined))} key={index}/>
                         ))}
                     </TableColumn>
                 </TWMTable>
@@ -261,13 +254,13 @@ function AssignToLeaderboard(leaderboard: string, users: LeaderboardUser[]) {
                     <TableColumn>
                         <TableHeader name='User'/>
                         {users.map((user, index) => (
-                            <TableItem item={user.username} key={index}/>
+                            <TableItem item={user.name} key={index}/>
                         ))}
                     </TableColumn>
                     <TableColumn>
                         <TableHeader name='Amount'/>
                         {users.map((user, index) => (
-                            <TableItem item={String(user.times_shattered.toLocaleString(undefined))} key={index}/>
+                            <TableItem item={String(user.data.times_shattered.toLocaleString(undefined))} key={index}/>
                         ))}
                     </TableColumn>
                 </TWMTable>
@@ -305,13 +298,13 @@ function AssignToLeaderboard(leaderboard: string, users: LeaderboardUser[]) {
                     <TableColumn>
                         <TableHeader name='User'/>
                         {users.map((user, index) => (
-                            <TableItem item={user.username} key={index}/>
+                            <TableItem item={user.name} key={index}/>
                         ))}
                     </TableColumn>
                     <TableColumn>
                         <TableHeader name='Amount'/>
                         {users.map((user, index) => (
-                            <TableItem item={String(user.times_asked.toLocaleString(undefined))} key={index}/>
+                            <TableItem item={String(user.data.times_asked.toLocaleString(undefined))} key={index}/>
                         ))}
                     </TableColumn>
                 </TWMTable>
@@ -349,13 +342,13 @@ function AssignToLeaderboard(leaderboard: string, users: LeaderboardUser[]) {
                     <TableColumn>
                         <TableHeader name='User'/>
                         {users.map((user, index) => (
-                            <TableItem item={user.username} key={index}/>
+                            <TableItem item={user.name} key={index}/>
                         ))}
                     </TableColumn>
                     <TableColumn>
                         <TableHeader name='Amount'/>
                         {users.map((user, index) => (
-                            <TableItem item={String(user.times_transmitted.toLocaleString(undefined))} key={index}/>
+                            <TableItem item={String(user.data.times_transmitted.toLocaleString(undefined))} key={index}/>
                         ))}
                     </TableColumn>
                 </TWMTable>
@@ -367,71 +360,23 @@ function AssignToLeaderboard(leaderboard: string, users: LeaderboardUser[]) {
 export default function Main() {
     const [pageStatus, setPageStatus] = useState('loading');
     const [gotToken, setGotToken] = useState(false);
-  
-    const [currentUser, setCurrentUser] = useState<LeaderboardUser | undefined>();
+
     const [rankedWoolUsers, setRankedWoolUsers] = useState<LeaderboardUser[]>([]);
     const [rankedSunUsers, setRankedSunUsers] = useState<LeaderboardUser[]>([]);
     const [rankedTimesTransmittedUsers, setRankedTimesTransmittedUsers] = useState<LeaderboardUser[]>([]);
     const [rankedTimesAskedUsers, setRankedTimesAskedUsers] = useState<LeaderboardUser[]>([]);
     const [rankedTimesShatteredUsers, setRankedTimesShatteredUsers] = useState<LeaderboardUser[]>([]);
   
-    const { data, status } = useSession();
-  
-    useEffect(() => {
-      if (!data && status !== 'loading') {
-        setPageStatus('unauthenticated');
-      } else if (status === 'loading') {
-        setPageStatus('loading');
-      } else {
-        if (data?.access_token && !gotToken) {
-          axios.get('https://discord.com/api/users/@me', {
-            headers: {
-              Authorization: `Bearer ${data?.access_token}`,
-            },
-          })
-            .then((response) => {
-              const discordData = response.data;
-  
-              setGotToken(true);
-  
-              setCurrentUser({
-                username: discordData.username,
-                times_shattered: 0,
-                times_asked: 0,
-                times_transmitted: 0,
-                wool: 0,
-                suns: 0,
-              });
-  
-              setPageStatus('success');
-            })
-            .catch((error) => {
-              console.error('Error fetching user data from Discord:', error);
-              setPageStatus('error');
-            });
-        }
-      }
-    }, [data, status, gotToken]);
-  
     useEffect(() => {
         async function grabUserData() {
             try {
 
-            console.log('grabbing wool');
-
-            const allUsers: LeaderboardUser[] = await GetLeaderboard();
-
-            const woolUsers = allUsers.sort((a, b) => b.wool - a.wool).slice(0, 10);
-            const sunUsers = allUsers.sort((a, b) => b.suns - a.suns).slice(0, 10);
-            const timesShatteredUsers = allUsers.sort((a, b) => b.times_shattered - a.times_shattered).slice(0, 10);
-            const timesAskedUsers = allUsers.sort((a, b) => b.times_asked - a.times_asked).slice(0, 10);
-            const timesTransmittedUsers = allUsers.sort((a, b) => b.times_transmitted - a.times_transmitted).slice(0, 10);
-
-            setRankedWoolUsers(woolUsers);
-            setRankedSunUsers(sunUsers);
-            setRankedTimesShatteredUsers(timesShatteredUsers);
-            setRankedTimesAskedUsers(timesAskedUsers);
-            setRankedTimesTransmittedUsers(timesTransmittedUsers);
+            setRankedWoolUsers(await GetLeaderboard('wool'));
+            
+            setRankedSunUsers(await GetLeaderboard('suns'));
+            setRankedTimesAskedUsers(await GetLeaderboard('times_asked'));
+            setRankedTimesShatteredUsers(await GetLeaderboard('times_shattered'));
+            setRankedTimesTransmittedUsers(await GetLeaderboard('times_transmitted'));
             
             setPageStatus('success');
             } catch (error) {
@@ -442,16 +387,10 @@ export default function Main() {
   
         grabUserData();
     }, []);
-  
-    if (pageStatus === 'loading') {
-        return LoadingPage('authing');
-    }
 
     if (pageStatus === 'error') {
-        return LoadingPage('error');
+        return PageStatus('error');
     }
 
-    if (pageStatus === 'success') {
-        return Page(currentUser, rankedWoolUsers, rankedSunUsers, rankedTimesShatteredUsers, rankedTimesAskedUsers, rankedTimesTransmittedUsers);
-    }
+    return Page(rankedWoolUsers, rankedSunUsers, rankedTimesShatteredUsers, rankedTimesAskedUsers, rankedTimesTransmittedUsers);
   }
