@@ -12,27 +12,33 @@ export default function DiscordLogin() {
 
     if (!session && status !== 'loading') {
         return (
-            <button onClick={() => startSignIn()} className='w-auto text-lg flex ml-3'>
-                <Image src='/discord-mark-white.svg' width={20} height={20} alt='discord' className='mr-3'></Image>
-                Sign In
-            </button>
+            <div>
+                <button onClick={() => startSignIn()} className='w-auto text-lg flex ml-3'>
+                    <img src='/discord-mark-white.svg' width={20} height={20} alt='discord' className='mr-3'/>
+                    Sign In
+                </button>
+            </div>
         )
     }
     else if (status === 'loading') {
         return (
-            <button className='w-auto text-lg flex ml-3'>
-                    Loading
-            </button>
+            <div>
+                <button className='w-auto text-lg flex ml-3'>
+                        Loading
+                </button>
+            </div>
         )
     }
 
     if (session) {
         return(
-            <button onClick={() => signOut()} className='w-auto text-lg flex ml-3'>
-                <Image src={session.user?.image ?? '/discord-mark-white.svg'} alt='discord' width={30} height={15} className="mr-3"/>
-                
-                Sign Out
-            </button>
+            <div>
+                <button onClick={() => signOut()} className='w-auto text-lg flex ml-3 h-8 my-auto'>
+                    <img src={session.user?.image ?? '/discord-mark-white.svg'} width={25} height={1} alt='discord' className="mr-3 w-6 h-6 my-auto"/>
+                    
+                    Sign Out
+                </button>
+            </div>
         )
     }
 }
