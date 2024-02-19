@@ -29,6 +29,7 @@ export class UserData {
 
 export interface LeaderboardUser {
   name: string,
+  type: string,
   data: UserData
 }
 

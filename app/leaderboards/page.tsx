@@ -101,7 +101,6 @@ function Page(
     wool: LeaderboardUser[],
     suns: LeaderboardUser[],
     times_shattered: LeaderboardUser[],
-    times_asked: LeaderboardUser[],
     times_transmitted: LeaderboardUser[]
 ) {
     return (
@@ -110,261 +109,84 @@ function Page(
                 <Title>Global Leaderboards</Title>
                 <p className='text-center text-black'>(Loading may take a while.)</p>
                 <div className="mt-5"/>
+
                 <Header><p className='text-xl mr-2'>Wool</p> <img src={icons.wool_icon}/></Header>
                 <div className="mt-2"/>
                 {AssignToLeaderboard('wool', wool)}
                 <div className="mt-5"/>
+
                 <Header><p className='text-xl mr-2'>Suns</p> <img src={icons.sun_icon}/></Header>
                 <div className="mt-2"/>
                 {AssignToLeaderboard('suns', suns)}
                 <div className="mt-5"/>
+
                 <Header><p className='text-xl mr-2'>Times Shattered</p> <img src={icons.explode_icon}/></Header>
                 <div className="mt-2"/>
                 {AssignToLeaderboard('times_shattered', times_shattered)}
                 <div className="mt-5"/>
-                <Header><p className='text-xl mr-2'>Times Asked</p> <img src={icons.ask_icon}/></Header>
-                <div className="mt-2"/>
-                {AssignToLeaderboard('times_asked', times_asked)}
-                <div className="mt-5"/>
+
                 <Header><p className='text-xl mr-2'>Times Transmitted</p> <img src={icons.transmit_icon}/></Header>
                 <div className="mt-2"/>
                 {AssignToLeaderboard('times_transmitted', times_transmitted)}
+                <div className="mt-5"/>
             </Window>
         </Desktop>
     )
 }
 
-function AssignToLeaderboard(leaderboard: string, users: LeaderboardUser[]) {
+function AssignToLeaderboard(type_name: string, leaderboard: LeaderboardUser[]) {
 
-    if (leaderboard === 'wool') {
-        if (users.length === 0) {
-            return(
-                <TWMTable>
-                    <TableColumn>
-                        <TableHeader name='#'/>
-                        <TableItem item='1.'/>
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='User'/>
-                        <TableItem item='Loading...'/>
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='Wool'/>
-                        <TableItem item='Loading...'/>
-                    </TableColumn>
-                </TWMTable>
-            )
-        } else {
-            return(
-                <TWMTable>
-                    <TableColumn>
-                        <TableHeader name='#'/>
-                        {users.map((user, index) => (
-                            <TableItem item={`${index + 1}.`} key={index}/>
-                        ))}
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='User'/>
-                        {users.map((user, index) => (
-                            <TableItem item={user.name} key={index}/>
-                        ))}
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='Wool'/>
-                        {users.map((user, index) => (
-                            <TableItem item={String(user.data.wool.toLocaleString(undefined))} key={index}/>
-                        ))}
-                    </TableColumn>
-                </TWMTable>
-            )
-        }
-    }
-
-    if (leaderboard ==='suns') {
-        if (users.length === 0) {
-            return(
-                <TWMTable>
-                    <TableColumn>
-                        <TableHeader name='#'/>
-                        <TableItem item='1.'/>
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='User'/>
-                        <TableItem item='Loading...'/>
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='Suns'/>
-                        <TableItem item='Loading...'/>
-                    </TableColumn>
-                </TWMTable>
-            )
-        } else {
-            return(
-                <TWMTable>
-                    <TableColumn>
-                        <TableHeader name='#'/>
-                        {users.map((user, index) => (
-                            <TableItem item={`${index + 1}.`} key={index}/>
-                        ))}
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='User'/>
-                        {users.map((user, index) => (
-                            <TableItem item={user.name} key={index}/>
-                        ))}
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='Suns'/>
-                        {users.map((user, index) => (
-                            <TableItem item={String(user.data.suns.toLocaleString(undefined))} key={index}/>
-                        ))}
-                    </TableColumn>
-                </TWMTable>
-            )
-        }
-    }
-
-    if (leaderboard === 'times_shattered') {
-        if (users.length === 0) {
-            return(
-                <TWMTable>
-                    <TableColumn>
-                        <TableHeader name='#'/>
-                        <TableItem item='1.'/>
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='User'/>
-                        <TableItem item='Loading...'/>
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='Amount'/>
-                        <TableItem item='Loading...'/>
-                    </TableColumn>
-                </TWMTable>
-            )
-        } else {
-            return(
-                <TWMTable>
-                    <TableColumn>
-                        <TableHeader name='#'/>
-                        {users.map((user, index) => (
-                            <TableItem item={`${index + 1}.`} key={index}/>
-                        ))}
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='User'/>
-                        {users.map((user, index) => (
-                            <TableItem item={user.name} key={index}/>
-                        ))}
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='Amount'/>
-                        {users.map((user, index) => (
-                            <TableItem item={String(user.data.times_shattered.toLocaleString(undefined))} key={index}/>
-                        ))}
-                    </TableColumn>
-                </TWMTable>
-            )
-        }
-    }
-
-    if (leaderboard === 'times_asked') {
-        if (users.length === 0) {
-            return(
-                <TWMTable>
-                    <TableColumn>
-                        <TableHeader name='#'/>
-                        <TableItem item='1.'/>
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='User'/>
-                        <TableItem item='Loading...'/>
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='Amount'/>
-                        <TableItem item='Loading...'/>
-                    </TableColumn>
-                </TWMTable>
-            )
-        } else {
-            return(
-                <TWMTable>
-                    <TableColumn>
-                        <TableHeader name='#'/>
-                        {users.map((user, index) => (
-                            <TableItem item={`${index + 1}.`} key={index}/>
-                        ))}
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='User'/>
-                        {users.map((user, index) => (
-                            <TableItem item={user.name} key={index}/>
-                        ))}
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='Amount'/>
-                        {users.map((user, index) => (
-                            <TableItem item={String(user.data.times_asked.toLocaleString(undefined))} key={index}/>
-                        ))}
-                    </TableColumn>
-                </TWMTable>
-            )
-        }
-    }
-
-    if (leaderboard === 'times_transmitted') {
-        if (users.length === 0) {
-            return(
-                <TWMTable>
-                    <TableColumn>
-                        <TableHeader name='#'/>
-                        <TableItem item='1.'/>
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='User'/>
-                        <TableItem item='Loading...'/>
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='Amount'/>
-                        <TableItem item='Loading...'/>
-                    </TableColumn>
-                </TWMTable>
-            )
-        } else {
-            return(
-                <TWMTable>
-                    <TableColumn>
-                        <TableHeader name='#'/>
-                        {users.map((user, index) => (
-                            <TableItem item={`${index + 1}.`} key={index}/>
-                        ))}
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='User'/>
-                        {users.map((user, index) => (
-                            <TableItem item={user.name} key={index}/>
-                        ))}
-                    </TableColumn>
-                    <TableColumn>
-                        <TableHeader name='Amount'/>
-                        {users.map((user, index) => (
-                            <TableItem item={String(user.data.times_transmitted.toLocaleString(undefined))} key={index}/>
-                        ))}
-                    </TableColumn>
-                </TWMTable>
-            )
-        }
+    if (leaderboard.length === 0) {
+        return(
+            <TWMTable>
+                <TableColumn>
+                    <TableHeader name='#'/>
+                    <TableItem item='1.'/>
+                </TableColumn>
+                <TableColumn>
+                    <TableHeader name='User'/>
+                    <TableItem item='Loading...'/>
+                </TableColumn>
+                <TableColumn>
+                    <TableHeader name='Amount'/>
+                    <TableItem item='Loading...'/>
+                </TableColumn>
+            </TWMTable>
+        )
+    } else {
+        return(
+            <TWMTable>
+                <TableColumn>
+                    <TableHeader name='#'/>
+                    {leaderboard.map((user, index) => (
+                        <TableItem item={`${index + 1}.`} key={index}/>
+                    ))}
+                </TableColumn>
+                <TableColumn>
+                    <TableHeader name='User'/>
+                    {leaderboard.map((user, index) => (
+                        <TableItem item={user.name} key={index}/>
+                    ))}
+                </TableColumn>
+                <TableColumn>
+                    <TableHeader name='Amount'/>
+                    {
+                        leaderboard.map((user, index) => (
+                            <TableItem item={String((user.data as any)[type_name].toLocaleString())} key={index}/>
+                        ))
+                    }
+                </TableColumn>
+            </TWMTable>
+        )
     }
 }
 
 export default function Main() {
     const [pageStatus, setPageStatus] = useState('loading');
-    const [gotToken, setGotToken] = useState(false);
 
     const [rankedWoolUsers, setRankedWoolUsers] = useState<LeaderboardUser[]>([]);
     const [rankedSunUsers, setRankedSunUsers] = useState<LeaderboardUser[]>([]);
     const [rankedTimesTransmittedUsers, setRankedTimesTransmittedUsers] = useState<LeaderboardUser[]>([]);
-    const [rankedTimesAskedUsers, setRankedTimesAskedUsers] = useState<LeaderboardUser[]>([]);
     const [rankedTimesShatteredUsers, setRankedTimesShatteredUsers] = useState<LeaderboardUser[]>([]);
   
     useEffect(() => {
@@ -374,7 +196,6 @@ export default function Main() {
             setRankedWoolUsers(await GetLeaderboard('wool'));
             
             setRankedSunUsers(await GetLeaderboard('suns'));
-            setRankedTimesAskedUsers(await GetLeaderboard('times_asked'));
             setRankedTimesShatteredUsers(await GetLeaderboard('times_shattered'));
             setRankedTimesTransmittedUsers(await GetLeaderboard('times_transmitted'));
             
@@ -392,5 +213,5 @@ export default function Main() {
         return PageStatus('error');
     }
 
-    return Page(rankedWoolUsers, rankedSunUsers, rankedTimesShatteredUsers, rankedTimesAskedUsers, rankedTimesTransmittedUsers);
+    return Page(rankedWoolUsers, rankedSunUsers, rankedTimesShatteredUsers, rankedTimesTransmittedUsers);
   }

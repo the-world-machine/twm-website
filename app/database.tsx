@@ -66,7 +66,7 @@ export async function GetLeaderboard(sortBy: string) {
         const userPromises = result.map(async (doc) => {
             const user = await GetDiscordData(doc._id);
 
-            return { name: user.username, data: { ...doc } as UserData };
+            return { name: user.username, type: sortBy, data: { ...doc } as UserData };
         });
 
         // Use Promise.all to wait for all promises to resolve
