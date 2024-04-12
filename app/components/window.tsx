@@ -10,7 +10,7 @@ export default function Window({ title, children, className }: WindowProps) {
 
     return (
       <Draggable handle=".title-bar" bounds=".desktop">
-        <div className='window absolute top-1 left-1 sm:top-5 sm:left-[200px] z-10'>
+        <div className='window absolute top-2 left-1 z-10 sm:top-5 sm:left-1/4 sm:-translate-x-1/2'>
           <div className="title-bar">
             <div className="title-bar-text">{title}</div>
             <div className="title-bar-controls">

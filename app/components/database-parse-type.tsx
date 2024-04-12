@@ -46,16 +46,48 @@ export function ParseType(data: string) {
   }
 }
 
-export interface Background {
-  name: string;
+interface Background {
+  type: number;
   image: string;
 }
 
+export interface Backgrounds {
+  [key: string]: Background;
+}
+
 export interface Item {
-  p_key: number;
-  name: string;
+  id: string;
+  cost: number;
   image: string;
-  price: number;
-  description: string;
+}
+
+interface Treasure {
+  cost: number;
+  image: string;
+}
+
+export interface Treasures {
+  [key: string]: Treasure;
+}
+
+interface Badge {
+  id: number;
+  image: string;
   type: string;
+  requirement: number;
+  emoji: string;
+}
+
+export interface Badges {
+  [key: string]: Badge;
+}
+
+export interface ItemData {
+  backgrounds: Backgrounds;
+  items: {
+    capsules: Item[];
+    pancakes: Item[];
+    treasures: Treasures;
+  };
+  badges: Badges
 }

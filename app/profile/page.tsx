@@ -4,8 +4,8 @@ import axios from "axios";
 import { useSession, signIn, getSession } from "next-auth/react";
 import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 
-import { Fetch as fetchFromDatabase, GetBackgrounds, Update as updateToDatabase } from "../database";
-import { UserData, Background } from "../components/database-parse-type";
+import { Fetch as fetchFromDatabase, FetchItemData, GetBackgrounds, Update as updateToDatabase } from "../database";
+import { UserData, ItemData } from "../components/database-parse-type";
 
 import Desktop from "../components/desktop";
 import Window from '../components/window';
@@ -22,7 +22,7 @@ export default function Profile() {
   const [userID, setUserID] = useState<null | string>(null);
   const [saveToDatabase, setSaveToDatabase] = useState<boolean>(false);
 
-  const [allBackgrounds, setAllBackgrounds] = useState<Background[]>([]);
+  const [items, setItems] = useState<ItemData>();
   const [textLength, setTextLength] = useState<number>(0);
   const [checked, setChecked] = useState(false);
 
@@ -166,7 +166,7 @@ export default function Profile() {
 
                 <h1 className='text-xl text-black text-center mt-5 mb-5'>Change Profile Background</h1>
 
-                <BackgroundSelection ownedBackgrounds={userToUpdate?.owned_backgrounds ?? ["Default"]} equippedBackground={userToUpdate?.equipped_bg ?? "Default"} allBackgrounds={allBackgrounds} onChange={updateBackground} />
+                <BackgroundSelection ownedBackgrounds={userToUpdate?.owned_backgrounds ?? ["Default"]} equippedBackground={userToUpdate?.equipped_bg ?? "Default"} allBackgrounds={items?.backgrounds ?? {}} onChange={updateBackground} />
             </div>
         </Window>
       </Desktop>
@@ -174,6 +174,22 @@ export default function Profile() {
   }
 
   const { data: discordData, status } = useSession()
+
+  useEffect(() => {
+    const fetchItems = async () => {
+        const data = await FetchItemData();
+
+        if (!data) {
+          console.error('For some reason data was never fetched.');
+          setPageStatus('error'); // Run error scenario if data doesn't exist... for whatever reason.
+          return
+        }
+        
+        setItems(data)
+    }
+
+    fetchItems()
+  }, [])
 
   useEffect(() => {
     const login = async () => {
@@ -236,23 +252,7 @@ export default function Profile() {
         setChecked(data.badge_notifications);
         setUserToUpdate({ ...data } as UserData)
 
-        // Fetch backgrounds as well.
-
-        const backgrounds = await GetBackgrounds();
-
-        if (!backgrounds) {
-          console.error('We couldn\'t get the backgrounds for some reason...');
-          setPageStatus('error');
-          return
-        }
-
         let all_bgs: any[] = [];
-
-        for (const bg in backgrounds) {
-          all_bgs.push({ name: bg, image: backgrounds[bg]['image'] });
-        }
-
-        setAllBackgrounds(all_bgs);
 
         setPageStatus('success');
 

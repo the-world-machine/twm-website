@@ -15,7 +15,7 @@ export default function Invite() {
 
     return (
         <Desktop>
-            <Window title='Invite' className=''>
+            <Window title='Invite' className='max-w-[800px]'>
                 <div className='flex justify-center flex-col font-main my-10 mx-10'>
                 <p className="text-center text-lg text-black mb-5">You want to invite The World Machine? That's great! Here are a few features to win you over more, and a shiny button to do the deed.</p>
                     <button onClick={handleClick} className='flex justify-between text-black w-[200px] mx-auto h-16 mb-10'>

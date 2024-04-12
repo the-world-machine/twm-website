@@ -1,7 +1,7 @@
-import { Background } from '../../components/database-parse-type'
+import { Backgrounds } from '../../components/database-parse-type'
 import { useState } from 'react'
 
-export default function BackgroundSelection({ ownedBackgrounds, equippedBackground, allBackgrounds, onChange }: { ownedBackgrounds: string[], equippedBackground: string, allBackgrounds: Background[], onChange: (background: string) => void }) {
+export default function BackgroundSelection({ ownedBackgrounds, equippedBackground, allBackgrounds, onChange }: { ownedBackgrounds: string[], equippedBackground: string, allBackgrounds: Backgrounds, onChange: (background: string) => void }) {
     
     const [selectedBackground, setSelectedBackground] = useState(equippedBackground);
 
@@ -21,19 +21,18 @@ export default function BackgroundSelection({ ownedBackgrounds, equippedBackgrou
         }
     }
 
-    const selectedBackgroundData = allBackgrounds.find((background) => background.name === selectedBackground);
-    const ownedBackgroundsData = allBackgrounds.filter((background) => ownedBackgrounds.includes(background.name));
+    const selectedBackgroundData = allBackgrounds.selectedBackground;
     
     return (
         <div className='grid place-items-center font-main'>
 
             <h1 className='text-black text-lg'>Currently Selected: {selectedBackground}</h1>
 
-            <img src={selectedBackgroundData?.image} alt={selectedBackground} width={300} height={0} className='mt-2 mx-5'/>
+            <img src={allBackgrounds[selectedBackground].image} alt={selectedBackground} width={300} height={0} className='mt-2 mx-5'/>
 
             <div className='flex overflow-x-auto max-w-[600px] mt-3 bg-[#939393] border-2 border-slate-600'>
-                {ownedBackgroundsData.map((background) => (
-                    <img key={background.name} className={'hover:cursor-pointer mx-2 my-3'} onClick={() => UpdateBackground(background.name)} src={background.image} alt={background.name} width={100} height={0}/>
+                {ownedBackgrounds.map((background) => (
+                    <img key={background} className={'hover:cursor-pointer mx-2 my-3'} onClick={() => UpdateBackground(background)} src={allBackgrounds[background].image} alt={background} width={100} height={0}/>
                 ))}
             </div>
         </div>

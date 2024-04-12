@@ -1,11 +1,11 @@
 'use server'
 import axios from 'axios';
 import { Collection, MongoClient, ObjectId } from 'mongodb';
-import { UserData, LeaderboardUser } from './components/database-parse-type'
+import { UserData, LeaderboardUser, ItemData } from './components/database-parse-type'
 
 let collection: null | Collection<UserData> = null
 
-async function connectToDatabase() {
+async function connectToDatabase(collection_to_use: string = 'UserData') {
 
     if (collection != null) { return collection }
 
@@ -17,7 +17,7 @@ async function connectToDatabase() {
 
     const db = mongoDBClient.db('TheWorldMachine')
 
-    return db.collection<UserData>('UserData')
+    return db.collection<UserData>(collection_to_use)
 }
 
 export async function Fetch(user: string): Promise<UserData | null> {
@@ -75,10 +75,23 @@ export async function GetLeaderboard(sortBy: string) {
         // Push the resolved data to the leaderboard array
         leaderboard.push(...leaderboardData);
     } catch (error) {
-        console.error('Error getting leaderboard data ' + error);
+        console.error(error);
     }
 
     return leaderboard;
+}
+
+export async function FetchItemData() {
+
+    const data = await connectToDatabase('ItemData');
+
+    const itemData = await data.findOne({ access: 'ItemData' });
+
+    if (itemData) {
+        return itemData as unknown as ItemData;
+    } else {
+        return null;
+    }
 }
 
 export async function GetDiscordData(userID: string) {

@@ -2,7 +2,7 @@
 import Desktop from "../components/desktop";
 import Window from "../components/window"
 import icons from './icons.json';
-import { useCallback, useEffect, useState } from "react";
+import { useReducer, useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import axios from "axios";
 import { GetLeaderboard } from "../database";
@@ -188,25 +188,25 @@ export default function Main() {
     const [rankedSunUsers, setRankedSunUsers] = useState<LeaderboardUser[]>([]);
     const [rankedTimesTransmittedUsers, setRankedTimesTransmittedUsers] = useState<LeaderboardUser[]>([]);
     const [rankedTimesShatteredUsers, setRankedTimesShatteredUsers] = useState<LeaderboardUser[]>([]);
-  
-    useEffect(() => {
-        async function grabUserData() {
-            try {
 
-            setRankedWoolUsers(await GetLeaderboard('wool'));
-            
-            setRankedSunUsers(await GetLeaderboard('suns'));
-            setRankedTimesShatteredUsers(await GetLeaderboard('times_shattered'));
-            setRankedTimesTransmittedUsers(await GetLeaderboard('times_transmitted'));
-            
-            setPageStatus('success');
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
+
+    useEffect(() => {
+        async function grabLeaderboardData() {
+            try {
+                setRankedWoolUsers(await GetLeaderboard('wool'));
+                setRankedSunUsers(await GetLeaderboard('suns'));
+                setRankedTimesShatteredUsers(await GetLeaderboard('times_shattered'));
+                setRankedTimesTransmittedUsers(await GetLeaderboard('times_transmitted'));
+                
+                setPageStatus('success');
             } catch (error) {
-            console.error('Error fetching leaderboard data:', error);
-            setPageStatus('error');
+                console.error('Error fetching leaderboard data:', error);
+                setPageStatus('error');
             }
         }
   
-        grabUserData();
+        grabLeaderboardData();
     }, []);
 
     if (pageStatus === 'error') {
