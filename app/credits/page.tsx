@@ -55,7 +55,7 @@ export default function Page() {
 
                 <div className="mt-5"/>
 
-                <Text>And of course, the OneShot team for creating such a wonderful game this bot is based off!</Text>
+                <Text>And of course, OneShot! The wonderful game this bot is based off!</Text>
             </Window>
         </Desktop>
     )
