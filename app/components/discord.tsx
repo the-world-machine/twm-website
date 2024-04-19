@@ -14,7 +14,6 @@ export default function DiscordLogin() {
         return (
             <div>
                 <button onClick={() => startSignIn()} className='w-auto text-lg flex ml-3'>
-                    <img src='/discord-mark-white.svg' width={20} height={20} alt='discord' className='mr-3'/>
                     Sign In
                 </button>
             </div>
