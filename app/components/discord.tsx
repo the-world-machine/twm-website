@@ -34,8 +34,6 @@ export default function DiscordLogin() {
         return(
             <div>
                 <button onClick={() => signOut()} className='w-auto text-lg flex ml-3 h-8 my-auto'>
-                    <img src={session.user?.image ?? '/discord-mark-white.svg'} width={25} height={1} alt='discord' className="mr-3 w-6 h-6 my-auto"/>
-                    
                     Sign Out
                 </button>
             </div>
