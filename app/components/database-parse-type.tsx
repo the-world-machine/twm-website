@@ -27,6 +27,37 @@ export class UserData {
   ) {}
 }
 
+export interface NikogotchiValues {
+  value: number;
+  max: number;
+}
+
+export interface NikogotchiData {
+
+  last_interacted: Date;
+  hatched: Date;
+  nikogotchi_available: boolean;
+  rarity: string;
+
+  _id?: string;
+  data: object;
+  pancakes: number;
+  golden_pancakes: number;
+  glitched_pancakes: number;
+
+  level: number;
+  health: NikogotchiValues;
+  energy: NikogotchiValues;
+  hunger: NikogotchiValues;
+  cleanliness: NikogotchiValues;
+  happiness: NikogotchiValues;
+
+  room_data: number[];
+  name: string;
+  status: number;
+  immortal: boolean;
+}
+
 export interface LeaderboardUser {
   name: string,
   type: string,
@@ -82,6 +113,12 @@ export interface Badges {
   [key: string]: Badge;
 }
 
+export interface NikogotchiInformation {
+  name: string;
+  emoji: string;
+  type: string;
+}
+
 export interface ItemData {
   backgrounds: Backgrounds;
   items: {
@@ -89,5 +126,6 @@ export interface ItemData {
     pancakes: Item[];
     treasures: Treasures;
   };
-  badges: Badges
+  badges: Badges;
+  nikogotchi: NikogotchiInformation[];
 }

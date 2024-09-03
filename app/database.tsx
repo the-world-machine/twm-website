@@ -1,7 +1,7 @@
 'use server'
 import axios from 'axios';
 import { Collection, MongoClient, ObjectId } from 'mongodb';
-import { UserData, LeaderboardUser, ItemData } from './components/database-parse-type'
+import { UserData, LeaderboardUser, ItemData, NikogotchiInformation, NikogotchiData } from './components/database-parse-type'
 
 let collection: null | Collection<UserData> = null
 
@@ -33,6 +33,18 @@ export async function Fetch(user: string): Promise<UserData | null> {
         const defaultData = new UserData()
         await user_data_collection.insertOne({ _id: user, ...defaultData })
         return Fetch(user)
+    }
+}
+
+
+export async function GetNikogotchiData(user: string): Promise<NikogotchiData | null> {
+    const user_data_collection = await connectToDatabase('UserNikogotchis');
+    const userDataFromDB = await user_data_collection.findOne({ _id: user });
+    
+    if (userDataFromDB) {
+        return userDataFromDB as unknown as NikogotchiData;
+    } else {
+        return null;
     }
 }
 
@@ -95,7 +107,7 @@ export async function FetchItemData() {
 }
 
 export async function GetDiscordData(userID: string) {
-    const response = await axios.get(`https://discordlookup.mesavirep.xyz/v1/user/${userID}`)
+    const response = await axios.get(`https://discordlookup.mesalytic.moe/v1/user/${userID}`)
 
     return response.data;
 }
