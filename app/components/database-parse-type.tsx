@@ -78,7 +78,8 @@ export function ParseType(data: string) {
 }
 
 interface Background {
-  type: number;
+  purchasable: number;
+  cost: number;
   image: string;
 }
 
