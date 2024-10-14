@@ -130,3 +130,11 @@ export interface ItemData {
   badges: Badges;
   nikogotchi: NikogotchiInformation[];
 }
+
+export interface BlogPost {
+  title: string;
+  content: string;
+  description: string;
+  datetime: Date;
+  post_id: number;
+}

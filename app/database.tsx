@@ -1,9 +1,9 @@
 'use server'
-import axios from 'axios';
+import axios, { all } from 'axios';
 import { Collection, MongoClient, ObjectId } from 'mongodb';
-import { UserData, LeaderboardUser, ItemData, NikogotchiInformation, NikogotchiData } from './components/database-parse-type'
+import { UserData, LeaderboardUser, ItemData, NikogotchiInformation, NikogotchiData, BlogPost } from './components/database-parse-type'
 
-let collection: null | Collection<UserData> = null
+let collection: null | Collection<any> = null
 
 async function connectToDatabase(collection_to_use: string = 'UserData') {
 
@@ -17,7 +17,7 @@ async function connectToDatabase(collection_to_use: string = 'UserData') {
 
     const db = mongoDBClient.db('TheWorldMachine')
 
-    return db.collection<UserData>(collection_to_use)
+    return db.collection<any>(collection_to_use)
 }
 
 export async function Fetch(user: string): Promise<UserData | null> {
@@ -117,4 +117,40 @@ export async function GetBackgrounds() {
 
     const responseBackgrounds = await fetch(end_point);
     return await responseBackgrounds.json();
+}
+
+export async function FetchBlogPosts() {
+
+    const blogPosts: BlogPost[] = []
+
+    const blogData = await connectToDatabase('Blog');
+
+    const blogPostList = await blogData.find({}).toArray();
+
+    const blogPostPromises = blogPostList.map(async (blogDocs) => {
+        return { ...blogDocs } as BlogPost
+    });
+
+    const allBlogPosts = await Promise.all(blogPostPromises);
+
+    blogPosts.push(...allBlogPosts);
+
+    return blogPosts
+}
+
+export async function UploadBlogPost(post: BlogPost) {
+
+    if (post == undefined) {
+        return;
+    }
+
+    const blogData = await connectToDatabase('Blog');
+
+    const result = await blogData.insertOne(post);
+
+    if (result && result.insertedId) {
+        console.log(`New post created with the following id: ${result.insertedId}`);
+    } else {
+        console.error('Failed to insert the blog post.');
+    }
 }
