@@ -81,11 +81,11 @@ export default function Page() {
         };
 
         return (
-            <div className="window text-black min-w-[5px] mb-5" onClick={() => router.push(`/blog?id=${id}`)}>
+            <button className="window text-black min-w-[5px] w-full mb-5" onClick={() => router.push(`/blog?id=${id}`)}>
                 <p className="text-lg mx-3">{post.title}</p>
                 <p className="text-sm mx-3">{post.description}</p>
                 <p className="text-gray-500 text-right text-xs mx-3">{formatDate(post.datetime)}</p>
-            </div>
+            </button>
         );
     }
 

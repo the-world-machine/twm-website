@@ -11,7 +11,6 @@ import Desktop from "../components/desktop";
 import Window from '../components/window';
 import BackgroundSelection from "../components/profile/background-selector";
 import languages from './languages.json';
-import { User } from "next-auth";
 
 export default function Profile() {
   
@@ -90,20 +89,9 @@ export default function Profile() {
       setSaved(true);
     }
 
-    function isKeyOfUserData(key: string): key is keyof UserData {
-        return ['badge_notifications', 'equipped_bg', 'profile_description', 'translation_language'].includes(key);
-    }
-
     const shouldSave = (data: any) => {
-
-      const filteredData = Object.keys(data)
-        .filter(isKeyOfUserData) // Use the type guard
-        .reduce((obj, key) => {
-            obj[key] = data[key]; // TypeScript now knows key is keyof UserData
-            return obj;
-        }, {} as Partial<UserData>);
-
-      setUserToUpdate((prevUser) => ({ ...prevUser, ...filteredData } as UserData));
+      
+      setUserToUpdate((prevUser) => ({ ...prevUser, ...data } as UserData))
 
       setSaveStatus('You have unsaved changes!');
       setSaved(false);
@@ -283,8 +271,8 @@ export default function Profile() {
     const updateData = async () => {
       if (!saveToDatabase) { return; } // We don't need to update the database if the database doesn't need updating.
       if (!userData) { return; } // Likewise if we don't have user data.
-
-      await updateToDatabase(userData);
+      
+      await updateToDatabase(userData, ['equipped_bg', 'badge_notifications', 'profile_description']);
 
       setSaveToDatabase(false);
     }

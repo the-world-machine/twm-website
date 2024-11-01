@@ -49,21 +49,29 @@ export async function GetNikogotchiData(user: string): Promise<NikogotchiData | 
 }
 
 
-export async function Update(user: UserData) {
+export async function Update(user: Partial<UserData>, filter: Array<String>) {
     const user_data_collection = await connectToDatabase();
 
-    console.log(user)
-    
+    const filteredData: { [key: string]: any } = {};
+      
+    filter.forEach(field => {
+        if (user[field as keyof UserData] !== undefined) {
+        filteredData[field as keyof UserData] = user[field as keyof UserData];
+        }
+    });
+
     try {
-        const result = await user_data_collection.updateOne({ _id: user._id }, { $set: {...user} })
-        console.log(result.matchedCount)
+        const result = await user_data_collection.updateOne(
+            { _id: user._id },
+            { $set: filteredData }
+        );
+        console.log(result.matchedCount);
     } catch (error) {
-        console.error('Error updating database: ' + error)
+        console.error('Error updating database: ' + error);
     }
 
-    console.log(user)
+    console.log(user);
 }
-
 export async function GetLeaderboard(sortBy: string) {
     
     const user_data_collection = await connectToDatabase();
