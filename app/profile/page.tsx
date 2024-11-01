@@ -11,6 +11,7 @@ import Desktop from "../components/desktop";
 import Window from '../components/window';
 import BackgroundSelection from "../components/profile/background-selector";
 import languages from './languages.json';
+import { User } from "next-auth";
 
 export default function Profile() {
   
@@ -89,9 +90,20 @@ export default function Profile() {
       setSaved(true);
     }
 
+    function isKeyOfUserData(key: string): key is keyof UserData {
+        return ['badge_notifications', 'equipped_bg', 'profile_description', 'translation_language'].includes(key);
+    }
+
     const shouldSave = (data: any) => {
-      
-      setUserToUpdate((prevUser) => ({ ...prevUser, ...data } as UserData))
+
+      const filteredData = Object.keys(data)
+        .filter(isKeyOfUserData) // Use the type guard
+        .reduce((obj, key) => {
+            obj[key] = data[key]; // TypeScript now knows key is keyof UserData
+            return obj;
+        }, {} as Partial<UserData>);
+
+      setUserToUpdate((prevUser) => ({ ...prevUser, ...filteredData } as UserData));
 
       setSaveStatus('You have unsaved changes!');
       setSaved(false);
