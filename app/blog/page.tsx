@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import { redirect } from 'next/navigation'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Head from "next/head";
+import { DiscordLogIn } from "../discord";
 
 function formatDate(date: Date): string {
     const options: Intl.DateTimeFormatOptions = {
@@ -59,11 +60,11 @@ export default function Page() {
               return;
             }
     
-            if (!discordData?.access_token) { return } // If there's no access token then we don't need to do anything yet.
+            var userData = await DiscordLogIn(discordData);
+
+            if (userData == null) { return; }
     
-            const response = await axios.get('https://discord.com/api/users/@me', { headers: { Authorization: `Bearer ${discordData.access_token}` } })
-    
-            setUserID(response.data.id)
+            setUserID(userData._id as string)
           }
           catch (error) {
             console.error('Error fetching data from discord:', error);
