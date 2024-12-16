@@ -213,5 +213,5 @@ export default function Main() {
         return PageStatus('error');
     }
 
-    return Page(rankedWoolUsers, rankedSunUsers, rankedTimesShatteredUsers, rankedTimesTransmittedUsers);
+    return Page(rankedWoolUsers, rankedSunUsers, rankedTimesShatteredUsers, rankedTimesTransmittedUsers); // return page
   }
