@@ -73,38 +73,45 @@ export async function Update(user: Partial<UserData>, filter: Array<String>) {
     console.log(user);
 }
 export async function GetLeaderboard(sortBy: string) {
-    
     const user_data_collection = await connectToDatabase();
-
-    const leaderboard: LeaderboardUser[] = []
+    const leaderboard: LeaderboardUser[] = [];
 
     try {
-        const cursor = await user_data_collection.aggregate([{ $sort: { [sortBy]: -1 } }, { $limit: 10 }])
-
+        const cursor = await user_data_collection.aggregate([{ $sort: { [sortBy]: -1 } }, { $limit: 10 }]);
         const result = await cursor.toArray();
 
         const userPromises = result.map(async (doc) => {
             const user = await GetDiscordData(doc._id);
 
-            if (user.username == '')
-            {
-                return null;
+            if (user.username === '') {
+                return null; // Return null if the username is empty
             }
 
-            return { name: user.username, type: sortBy, data: { ...doc, wool: doc.wool.toLocaleString() } as UserData };
+            return { 
+                name: user.username, 
+                type: sortBy, 
+                data: { 
+                    ...doc, 
+                    wool: doc.wool.toLocaleString() 
+                } as UserData 
+            } as LeaderboardUser; // Ensure the return type is LeaderboardUser
         });
 
         // Use Promise.all to wait for all promises to resolve
-        const users = (await Promise.all(userPromises)).filter(user => user !== null);
+        const users = await Promise.all(userPromises);
+
+        // Filter out null values and assert the type
+        const validUsers: LeaderboardUser[] = users.filter((user): user is LeaderboardUser => user !== null);
 
         // Push the resolved data to the leaderboard array
-        leaderboard.push(...users);
+        leaderboard.push(...validUsers);
     } catch (error) {
         console.error(error);
     }
 
     return leaderboard;
 }
+
 
 export async function FetchItemData() {
 
