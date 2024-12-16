@@ -11,6 +11,7 @@ import Desktop from "../components/desktop";
 import Window from '../components/window';
 import BackgroundSelection from "../components/profile/background-selector";
 import languages from './languages.json';
+import { DiscordLogIn } from "../discord";
 
 export default function Profile() {
   
@@ -212,9 +213,22 @@ export default function Profile() {
 
         if (!discordData?.access_token) { return } // If there's no access token then we don't need to do anything yet.
 
-        const response = await axios.get('https://discord.com/api/users/@me', { headers: { Authorization: `Bearer ${discordData.access_token}` } })
+        const data = await DiscordLogIn(discordData);
 
-        setUserID(response.data.id)
+        if (data == null) {
+          setPageStatus('error');
+          return;
+        }
+
+        setUserData(data)
+
+        setPageStatus('authenticated')
+
+        setTextLength(data.profile_description.length)
+        setChecked(data.badge_notifications);
+        setUserToUpdate({ ...data } as UserData)
+        
+        setPageStatus('success');
       }
       catch (error) {
         console.error('Error fetching data from discord:', error);
@@ -225,47 +239,6 @@ export default function Profile() {
     login();
 
   }, [discordData]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-
-        if (!userID) { return; } // Don't do anything if we don't have the userID yet.
-
-        if (pageStatus === 'success') { return; }
-
-        setPageStatus('authenticated')
-
-        const data = await fetchFromDatabase(userID);
-
-        if (!data) {
-          console.error('For some reason data was never fetched.');
-          setPageStatus('error'); // Run error scenario if data doesn't exist... for whatever reason.
-          return
-        }
-
-        setUserData(data as UserData)
-
-        // Set fucking text length because haha funny react won't rerender unless i do this
-
-        setTextLength(data.profile_description.length)
-        setChecked(data.badge_notifications);
-        setUserToUpdate({ ...data } as UserData)
-
-        let all_bgs: any[] = [];
-
-        setPageStatus('success');
-
-      } catch (error) {
-        console.error('Error fetching data from database:', error);
-        setPageStatus('error');
-      }
-
-    }
-
-    fetchData();
-
-  }, [userID])
 
   useEffect(() => {
     const updateData = async () => {

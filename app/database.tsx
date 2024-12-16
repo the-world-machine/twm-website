@@ -86,14 +86,19 @@ export async function GetLeaderboard(sortBy: string) {
         const userPromises = result.map(async (doc) => {
             const user = await GetDiscordData(doc._id);
 
+            if (user.username == '')
+            {
+                return null;
+            }
+
             return { name: user.username, type: sortBy, data: { ...doc, wool: doc.wool.toLocaleString() } as UserData };
         });
 
         // Use Promise.all to wait for all promises to resolve
-        const leaderboardData = await Promise.all(userPromises);
+        const users = (await Promise.all(userPromises)).filter(user => user !== null);
 
         // Push the resolved data to the leaderboard array
-        leaderboard.push(...leaderboardData);
+        leaderboard.push(...users);
     } catch (error) {
         console.error(error);
     }
